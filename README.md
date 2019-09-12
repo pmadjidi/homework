@@ -9,7 +9,7 @@ The former would probably perform slightly better but would not be as "Goish" an
 violates type safety by use of interface{} and type cast could cause runtime panics... and thus is considered by the author as premature optimization
 for this task.
 All thought Golangs sync.Map could be a solution to scale a cross massive multiprocessing platforms...
-To scale beyond singe host solutions, distributed event logs and event processors is a way to proceed.
+To scale beyond single host solutions, distributed event logs and event processors is a way to proceed.
 
 To run locally:
 
