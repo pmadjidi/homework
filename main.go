@@ -12,7 +12,7 @@ var APP *App
 
 func shotdown() {
 	fmt.Println("Exiting...")
-	APP.quit <- true
+	close(APP.quit)
 }
 
 

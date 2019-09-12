@@ -11,6 +11,20 @@ for this task
 All thought Golangs sync.Map could be a solution to scale a cross massive multiprocessing platforms...
 To scale beyond singe host solutions, distributed event logs and event processors is a way to proceed.
 
+To run locally:
+
+./make
+./pedometers   
+
+
+To run in docker container
+
+./build
+./run
+
+to call use api:
+
+localhost:8080/apiUrl
 
 
 
