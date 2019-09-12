@@ -21,7 +21,7 @@ func (p *pedometers) startPedometers(quit chan bool) {
 		for {
 			select {
 			case req := <-p.leaderBoardCmd:
-				println("Processing",req.Cmd)
+				println("Processing",req.Cmd.String())
 				p.dispatchCommand(req)
 			case <-quit:
 				println("Stoping leaderboard processor")
@@ -36,7 +36,7 @@ func (p *pedometers) startPedometers(quit chan bool) {
 		for {
 			select {
 			case req := <-p.groupsCmd:
-				println("Processing",req.Cmd)
+				println("Processing",req.Cmd.String())
 				p.dispatchCommand(req)
 			case <-quit:
 				println("Stoping leaderboard processor")
@@ -69,6 +69,8 @@ func (p *pedometers) dispatchCommand(req *request) {
 		p.processListGroup(req)
 	case LISTALL:
 		p.processListAll(req)
+	case LISTALLGROUPS:
+		p.processListAllGroups(req)
 	case SCAN:
 		p.processScan(req)
 

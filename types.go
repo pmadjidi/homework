@@ -34,21 +34,5 @@ type App struct {
 
 type command int
 
-const (
-	NOP command = iota
-	ADDWALKER
-	REGISTERSTEPS
-	GETWALKER
-	ADDGROUP
-	ADDWALKERTOGROUP
-	DELETEWALKER
-	RESETSTEPS
-	LISTGROUP
-	LISTALL
-	SCAN
-)
-
-
-
 
 

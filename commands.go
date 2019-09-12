@@ -1,5 +1,39 @@
 package main
 
+const (
+	NOP command = iota
+	ADDWALKER
+	REGISTERSTEPS
+	GETWALKER
+	ADDGROUP
+	ADDWALKERTOGROUP
+	DELETEWALKER
+	RESETSTEPS
+	LISTGROUP
+	LISTALL
+	LISTALLGROUPS
+	SCAN
+)
+
+
+func (c command) String() string {
+	return [...]string{
+		"NOP",
+		"ADDWALKER",
+		"REGISTERSTEPS",
+		"GETWALKER",
+		"ADDGROUP",
+		"ADDWALKERTOGROUP",
+		"DELETEWALKER",
+		"RESETSTEPS",
+		"LISTGROUP",
+		"LISTALL",
+		"LISTALLGROUPS",
+		"SCAN",
+	}[c]
+}
+
+
 func (p *pedometers) AddWalker(req *request) {
 	req.Cmd = ADDWALKER
 	if req.Name == EMPTYSTRING {

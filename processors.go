@@ -112,7 +112,7 @@ func (p *pedometers) processListGroup(req *request) {
 		} else {
 			req.Result = newReq.Result
 			for k,v := range req.Result {
-				if v == NOTFOUND {
+				if v == NOTFOUND { // prepare for implementation of delte function
 					delete(req.Result,k)
 				} else {
 					req.Steps += v
@@ -147,10 +147,32 @@ func (p *pedometers) processScan(req *request) {
 			if found {
 				req.Result[k] = steps
 			} else {
-				req.Result[k] = NOTFOUND
+				req.Result[k] = NOTFOUND // prepare for implementation of delte function
 			}
 		}
 	}
 	req.resp <- req
+}
+
+func (p *pedometers) processListAllGroups(req *request) {
+	acc :=  make([]leaderboard, 1, 1)
+	for k, _ := range p.groups {
+		newRequest := newRequest()
+		newRequest.Group = k
+		p.ListGroup(newRequest)
+		ans := <-newRequest.resp
+		if ans.Error != nil {
+			req.Error = newRequest.Error
+			req.resp <- req
+			return
+		} else {
+			ans.Result["Total"] = ans.Steps
+			acc = append(acc,ans.Result)
+		}
+	}
+
+	req.Results = acc
+	req.resp <- req
+
 }
 
