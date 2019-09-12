@@ -58,6 +58,7 @@ func (a *App)  newStepper(w http.ResponseWriter, req *http.Request) {
 			w.Write([]byte("StatusInternalServerError 500..."))
 		}
 	} else {
+		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(outputStep{resp.Name,resp.Steps})
 	}
 }
@@ -98,7 +99,7 @@ func (a *App)  registerSteps(w http.ResponseWriter, req *http.Request) {
 			w.Write([]byte("StatusInternalServerError 500..."))
 		}
 	} else {
-
+		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(outputStep{resp.Name,resp.Steps})
 	}
 }
@@ -127,6 +128,7 @@ func (a *App)  getStepper(w http.ResponseWriter, req *http.Request) {
 			w.Write([]byte("StatusInternalServerError 500..."))
 		}
 	} else {
+		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(outputStep{resp.Name,resp.Steps})
 	}
 }
@@ -148,6 +150,7 @@ func (a *App)  getAllSteppers(w http.ResponseWriter, req *http.Request) {
 			w.Write([]byte("StatusInternalServerError 500..."))
 		}
 	} else {
+		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(resp.Result)
 	}
 }
@@ -177,6 +180,7 @@ func (a *App)  newGroup(w http.ResponseWriter, req *http.Request) {
 			w.Write([]byte("StatusInternalServerError 500..."))
 		}
 	} else {
+		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(outputGroup{resp.Group,resp.Steps,resp.Result})
 	}
 }
@@ -187,10 +191,6 @@ func (a *App)  extendGroup(w http.ResponseWriter, req *http.Request) {
 	r := newRequest()
 	r.Group = params["group"]
 	r.Name = params["person"]
-
-
-	println("Person and group",r.Name,r.Group)
-
 
 	go a.AddWalkerToGroup(r)
 	resp := <- r.resp
@@ -215,6 +215,7 @@ func (a *App)  extendGroup(w http.ResponseWriter, req *http.Request) {
 			w.Write([]byte("StatusInternalServerError 500..."))
 		}
 	} else {
+		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(outputStep{resp.Name,resp.Steps})
 	}
 }
@@ -243,6 +244,7 @@ func (a *App)  getGroup(w http.ResponseWriter, req *http.Request) {
 			w.Write([]byte("StatusInternalServerError 500..."))
 		}
 	} else {
+		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(outputGroup{resp.Group,resp.Steps,resp.Result})
 	}
 }
@@ -265,6 +267,7 @@ func (a *App)  getAll(w http.ResponseWriter, req *http.Request) {
 			w.Write([]byte("StatusInternalServerError 500..."))
 		}
 	} else {
+		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(resp.Results)
 	}
 }

@@ -4,16 +4,11 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"fmt"
 	"time"
 )
 
 var APP *App
 
-func shotdown() {
-	fmt.Println("Exiting...")
-	close(APP.quit)
-}
 
 
 func main() {
@@ -22,7 +17,7 @@ func main() {
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	go func() {
 		<-c
-		shotdown()
+		APP.shotdown()
 		<-time.After(2 * time.Second)
 		os.Exit(1)
 	}()

@@ -1,6 +1,9 @@
 package main
 
-import "github.com/gorilla/mux"
+import (
+	"github.com/gorilla/mux"
+	"fmt"
+)
 
 
 func newApp (name string) *App {
@@ -15,4 +18,9 @@ func (a *App) start() {
 	a.configureRoutes()
 	a.startPedometers(APP.quit)
 	a.startWebServer()
+}
+
+func (a *App) shotdown() {
+	fmt.Println("Exiting...")
+	close(a.quit)
 }
