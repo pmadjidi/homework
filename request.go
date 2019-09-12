@@ -10,7 +10,7 @@ type request struct {
 	Steps   int     `json:"steps"`
 	Error   error   `json:"error"`
 	Result  leaderboard
-	Results []leaderboard
+	Results map[string]leaderboard
 	resp    chan *request
 }
 
@@ -22,7 +22,7 @@ func newRequest() *request {
 		0,
 		nil,
 		nil,
-		nil,
+		make(map[string]leaderboard),
 		make(chan *request, 1),
 	}
 }

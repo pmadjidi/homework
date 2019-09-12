@@ -58,7 +58,7 @@ func (a *App)  newStepper(w http.ResponseWriter, req *http.Request) {
 			w.Write([]byte("StatusInternalServerError 500..."))
 		}
 	} else {
-		json.NewEncoder(w).Encode(resp)
+		json.NewEncoder(w).Encode(outputStep{resp.Name,resp.Steps})
 	}
 }
 
@@ -98,7 +98,8 @@ func (a *App)  registerSteps(w http.ResponseWriter, req *http.Request) {
 			w.Write([]byte("StatusInternalServerError 500..."))
 		}
 	} else {
-		json.NewEncoder(w).Encode(resp)
+
+		json.NewEncoder(w).Encode(outputStep{resp.Name,resp.Steps})
 	}
 }
 
@@ -126,7 +127,7 @@ func (a *App)  getStepper(w http.ResponseWriter, req *http.Request) {
 			w.Write([]byte("StatusInternalServerError 500..."))
 		}
 	} else {
-		json.NewEncoder(w).Encode(resp)
+		json.NewEncoder(w).Encode(outputStep{resp.Name,resp.Steps})
 	}
 }
 
@@ -176,7 +177,7 @@ func (a *App)  newGroup(w http.ResponseWriter, req *http.Request) {
 			w.Write([]byte("StatusInternalServerError 500..."))
 		}
 	} else {
-		json.NewEncoder(w).Encode(resp)
+		json.NewEncoder(w).Encode(outputGroup{resp.Group,resp.Steps,resp.Result})
 	}
 }
 
@@ -184,8 +185,11 @@ func (a *App)  extendGroup(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 
 	r := newRequest()
-	r.Name = params["person"]
 	r.Group = params["group"]
+	r.Name = params["person"]
+
+
+	println("Person and group",r.Name,r.Group)
 
 
 	go a.AddWalkerToGroup(r)
@@ -200,7 +204,10 @@ func (a *App)  extendGroup(w http.ResponseWriter, req *http.Request) {
 		case *InvalidNameError,*InvalidGroupNameError:
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte("StatusBadRequest 400..."))
-		case *NameDoesNotExistsError,*GroupDoesNotExistsError:
+		case *NameExistsError:
+			w.WriteHeader(http.StatusConflict)
+			w.Write([]byte("StatusConflict 409..."))
+		case *GroupDoesNotExistsError:
 			w.WriteHeader(http.StatusNotFound)
 			w.Write([]byte("StatusNotFound 404..."))
 		default:
@@ -208,7 +215,7 @@ func (a *App)  extendGroup(w http.ResponseWriter, req *http.Request) {
 			w.Write([]byte("StatusInternalServerError 500..."))
 		}
 	} else {
-		json.NewEncoder(w).Encode(resp)
+		json.NewEncoder(w).Encode(outputStep{resp.Name,resp.Steps})
 	}
 }
 
@@ -236,7 +243,7 @@ func (a *App)  getGroup(w http.ResponseWriter, req *http.Request) {
 			w.Write([]byte("StatusInternalServerError 500..."))
 		}
 	} else {
-		json.NewEncoder(w).Encode(resp)
+		json.NewEncoder(w).Encode(outputGroup{resp.Group,resp.Steps,resp.Result})
 	}
 }
 
@@ -253,18 +260,12 @@ func (a *App)  getAll(w http.ResponseWriter, req *http.Request) {
 		case *TimeOutError:
 			w.WriteHeader(http.StatusRequestTimeout)
 			w.Write([]byte("StatusRequestTimeout 408..."))
-		case *InvalidNameError:
-			w.WriteHeader(http.StatusBadRequest)
-			w.Write([]byte("StatusBadRequest 400..."))
-		case *GroupDoesNotExistsError:
-			w.WriteHeader(http.StatusNotFound)
-			w.Write([]byte("StatusNotFound 404..."))
 		default:
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("StatusInternalServerError 500..."))
 		}
 	} else {
-		json.NewEncoder(w).Encode(resp)
+		json.NewEncoder(w).Encode(resp.Results)
 	}
 }
 

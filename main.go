@@ -23,7 +23,7 @@ func main() {
 	go func() {
 		<-c
 		shotdown()
-		<-time.After(TIMEOUT * time.Second)
+		<-time.After(2 * time.Second)
 		os.Exit(1)
 	}()
 
@@ -31,5 +31,4 @@ func main() {
 	APP.start()
 
 }
-
 
