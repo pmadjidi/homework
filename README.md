@@ -11,14 +11,6 @@ for this task.
 All thought Golangs sync.Map could be a solution to scale a cross massive multiprocessing platforms...
 To scale beyond single host solutions, distributed event logs and event processors is a way to proceed.
 
-caveat:
-
-const MAXQUEUELENGTH = 10000 // works best if 20% more then MAXITERATIONLIMIT
-const MAXITERATIONLIMIT = 8000 // concurrent request to API server
-
-Setting MAXITERATIONLIMIT more then 8000 concurrent request to the API result in resource starvation and thus
-program stop behaving correctly due to timeouts and concurrent go process starvation....
-
 
 To run locally:
 

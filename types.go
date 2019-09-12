@@ -9,9 +9,19 @@ const EMPTYSTRING = ""
 const NOTFOUND = -1
 const TIMEOUT = 2
 
+/*
 
-const MAXQUEUELENGTH = 10000 // works best if 20% more then MAXITERATIONLIMIT
-const MAXITERATIONLIMIT = 8000 // concurrent request to API server
+on 8 core macbookpro 2018 with 32GIG memory, 40.000 concurrent connections....
+
+Stoping leaderboard processor
+Stoping group processor
+PASS
+ok  	github.com/pmadjidi/homework	17.186s
+ */
+
+
+const MAXQUEUELENGTH = 100000
+const MAXITERATIONLIMIT = 40000// concurrent request to API server
 
 type pedometers struct {
 	name string
