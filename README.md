@@ -14,7 +14,7 @@ To scale beyond singe host solutions, distributed event logs and event processor
 To run locally:
 
 ./make
-./pedometers   
+./homework   
 
 
 To run in docker container
