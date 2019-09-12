@@ -38,7 +38,7 @@ func (a *App)  newStepper(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 	r := newRequest()
 	r.Name = params["person"]
-	go a.AddWalker(r)
+	a.AddWalker(r)
 	resp := <- r.resp
 
 	if resp.Error != nil {
@@ -79,7 +79,7 @@ func (a *App)  registerSteps(w http.ResponseWriter, req *http.Request) {
 	r.Name = params["person"]
 	r.Steps = steps
 
-	go a.RegisterSteps(r)
+	a.RegisterSteps(r)
 	resp := <- r.resp
 
 	if resp.Error != nil {
@@ -108,7 +108,7 @@ func (a *App)  getStepper(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 	r := newRequest()
 	r.Name = params["person"]
-	go a.GetWalker(r)
+	a.GetWalker(r)
 	resp := <- r.resp
 
 	if resp.Error != nil {
@@ -136,7 +136,7 @@ func (a *App)  getStepper(w http.ResponseWriter, req *http.Request) {
 func (a *App)  getAllSteppers(w http.ResponseWriter, req *http.Request) {
 
 	r := newRequest()
-	go a.ListAll(r)
+	a.ListAll(r)
 	resp := <- r.resp
 
 	if resp.Error != nil {
@@ -160,7 +160,7 @@ func (a *App)  newGroup(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 	r := newRequest()
 	r.Group = params["name"]
-	go a.AddGroup(r)
+	a.AddGroup(r)
 	resp := <- r.resp
 
 	if resp.Error != nil {
@@ -192,7 +192,7 @@ func (a *App)  extendGroup(w http.ResponseWriter, req *http.Request) {
 	r.Group = params["group"]
 	r.Name = params["person"]
 
-	go a.AddWalkerToGroup(r)
+	a.AddWalkerToGroup(r)
 	resp := <- r.resp
 
 	if resp.Error != nil {
@@ -224,7 +224,7 @@ func (a *App)  getGroup(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 	r := newRequest()
 	r.Group = params["name"]
-	go a.ListGroup(r)
+	a.ListGroup(r)
 	resp := <- r.resp
 
 	if resp.Error != nil {
@@ -253,7 +253,7 @@ func (a *App)  getGroup(w http.ResponseWriter, req *http.Request) {
 func (a *App)  getAll(w http.ResponseWriter, req *http.Request) {
 
 	r := newRequest()
-	go a.processListAllGroups(r)
+	a.processListAllGroups(r)
 	resp := <- r.resp
 
 	if resp.Error != nil {

@@ -9,8 +9,8 @@ func newPedometers(name string) *pedometers {
 		name,
 		make(leaderboard),
 		make(groups),
-		make(chan *request),
-		make(chan *request),
+		make(chan *request,MAXQUEUELENGTH),
+		make(chan *request,MAXQUEUELENGTH),
 	}
 }
 

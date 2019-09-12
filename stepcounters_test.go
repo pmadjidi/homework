@@ -8,7 +8,7 @@ import (
 )
 
 
-const MAXITERATIONLIMIT = 2000
+
 
 
 func TestAddWalkerFail(t *testing.T) {
@@ -18,7 +18,7 @@ func TestAddWalkerFail(t *testing.T) {
 	defer close(quit)
 
 	req := newRequest()
-	go p.AddWalker(req)
+	p.AddWalker(req)
 	res := <- req.resp
 	assert.EqualError(t, res.Error,"NO_NAME","Should generate NO_NAME")
 }
@@ -32,12 +32,12 @@ func TestAddWalkerSucess(t *testing.T) {
 
 	req := newRequest()
 	req.Name = "Payam"
-	go p.AddWalker(req)
+	p.AddWalker(req)
 	res := <- req.resp
 	assert.Equal(t, res.Error,nil, "No Error")
 
 	req = newRequest()
-	go p.ListAll(req)
+	p.ListAll(req)
 	res = <- req.resp
 	assert.Equal(t, res.Result["Payam"],0, "Counter set to zer0")
 }
@@ -50,18 +50,18 @@ func TestAddWalker(t *testing.T) {
 
 	req := newRequest()
 	req.Name = "Payam"
-	go p.AddWalker(req)
+	p.AddWalker(req)
 	res := <- req.resp
 	assert.Equal(t, res.Error,nil, "No Error")
 
 	req = newRequest()
 	req.Name = "Mikael"
-	go p.AddWalker(req)
+	p.AddWalker(req)
 	res = <- req.resp
 	assert.Equal(t, res.Result["Payam"],0, "Counter set to zer0")
 	assert.Equal(t, res.Result["Mikael"],0, "Counter set to zer0")
 	req = newRequest()
-	go p.ListAll(req)
+	p.ListAll(req)
 	res = <- req.resp
 	res.print()
 }
@@ -73,12 +73,12 @@ func TestAddWalkerFailExits(t *testing.T) {
 	defer close(quit)
 	req := newRequest()
 	req.Name = "Payam"
-	go p.AddWalker(req)
+	p.AddWalker(req)
 	res := <- req.resp
 	assert.Equal(t, res.Error,nil, "No Error")
 	req = newRequest()
 	req.Name = "Payam"
-	go p.AddWalker(req)
+	p.AddWalker(req)
 	res = <- req.resp
 	assert.Equal(t, res.Error.Error(),"NAME_EXISTS", "Should generate NAME_EXISTS")
 }
@@ -92,12 +92,12 @@ func TestDeleteWalkerMissing(t *testing.T) {
 	defer close(quit)
 	req := newRequest()
 	req.Name = "Payam"
-	go p.DeleteWalker(req)
+	p.DeleteWalker(req)
 	res := <- req.resp
 	assert.EqualError(t, res.Error,"COMMAND_NOT_IMPLEMENTED","Should generate COMMAND_NOT_IMPLEMENTED")
 	req = newRequest()
 	req.Name = "Mikael"
-	go p.DeleteWalker(req)
+	p.DeleteWalker(req)
 	res = <- req.resp
 	assert.EqualError(t, res.Error,"COMMAND_NOT_IMPLEMENTED","Should generate COMMAND_NOT_IMPLEMENTED")
 
@@ -113,7 +113,7 @@ func TestConcurrentWalker(t *testing.T) {
 	defer close(quit)
 	req := newRequest()
 	req.Name = "Payam"
-	go p.AddWalker(req)
+	p.AddWalker(req)
 	<- req.resp
 	var waitgroup sync.WaitGroup
 	for i := 0; i < MAXITERATIONLIMIT; i++ {
@@ -129,7 +129,7 @@ func TestConcurrentWalker(t *testing.T) {
 	waitgroup.Wait()
 
 	req = newRequest()
-	go p.ListAll(req)
+	p.ListAll(req)
 	res := <- req.resp
 	res.print()
 
@@ -149,7 +149,7 @@ func TestConcurrentWalkerWithStepArgument(t *testing.T) {
 	defer close(quit)
 	req := newRequest()
 	req.Name = "Payam"
-	go p.AddWalker(req)
+	p.AddWalker(req)
 	<- req.resp
 	var waitgroup sync.WaitGroup
 	for i := 0; i < MAXITERATIONLIMIT; i++ {
@@ -165,7 +165,7 @@ func TestConcurrentWalkerWithStepArgument(t *testing.T) {
 	}
 	waitgroup.Wait()
 	req = newRequest()
-	go p.ListAll(req)
+	p.ListAll(req)
 	res := <- req.resp
 
 
@@ -204,7 +204,7 @@ func TestConcurrentWalkerWithStepArgukmentOne(t *testing.T) {
 	}
 	waitgroup.Wait()
 	req = newRequest()
-	go p.ListAll(req)
+	p.ListAll(req)
 	res := <- req.resp
 
 	assert.Equal(t, res.Error,nil, "Expect no Error")
@@ -259,7 +259,7 @@ func TestConcurrentWalkerAPIrace(t *testing.T) {
 	waitgroup.Wait()
 	println("callculating resutls")
 	all := newRequest()
-	go p.ListAll(all)
+	p.ListAll(all)
 	res := <- all.resp
 	assert.Equal(t, res.Error,nil, "Expect no Error")
 
@@ -280,7 +280,7 @@ func TestAddGrouprFail(t *testing.T) {
 	p.startPedometers(quit)
 	defer close(quit)
 	req := newRequest()
-	go p.AddGroup(req)
+	p.AddGroup(req)
 	res := <- req.resp
 	assert.EqualError(t, res.Error,"NO_GROUP","Should generate NO_GROUP")
 }
@@ -293,7 +293,7 @@ func TestAddGrouprSuccess(t *testing.T) {
 	defer close(quit)
 	req := newRequest()
 	req.Group = "Apsis"
-	go p.AddGroup(req)
+	p.AddGroup(req)
 	res := <- req.resp
 	assert.Equal(t, res.Error,nil, "Should generate NO_GROUP")
 }
@@ -307,12 +307,12 @@ func TestAddGrouprExistFail(t *testing.T) {
 
 	req := newRequest()
 	req.Group = "Apsis"
-	go p.AddGroup(req)
+	p.AddGroup(req)
 	_ = <- req.resp
 
 	req = newRequest()
 	req.Group = "Apsis"
-	go p.AddGroup(req)
+	p.AddGroup(req)
 	res := <- req.resp
 
 	assert.EqualError(t, res.Error,"GROUP_EXISTS","Should generate GROUP_EXISTS")
@@ -328,13 +328,13 @@ func TestAddWalkerToGroupSucess(t *testing.T) {
 
 	req := newRequest()
 	req.Name = "Payam"
-	go p.AddWalker(req)
+	p.AddWalker(req)
 	res := <- req.resp
 	assert.Equal(t, res.Error,nil, "No Error")
 
 	req = newRequest()
 	req.Group = "KTH"
-	go p.AddGroup(req)
+	p.AddGroup(req)
 	res = <- req.resp
 
 	assert.Equal(t, res.Error,nil, "No Error")
@@ -342,7 +342,7 @@ func TestAddWalkerToGroupSucess(t *testing.T) {
 	req = newRequest()
 	req.Name = "Payam"
 	req.Group = "KTH"
-	go p.AddWalkerToGroup(req)
+	p.AddWalkerToGroup(req)
 	res = <- req.resp
 
 	assert.Equal(t, res.Error,nil, "No Error")
@@ -350,7 +350,7 @@ func TestAddWalkerToGroupSucess(t *testing.T) {
 
 
 	req = newRequest()
-	go p.ListAll(req)
+	p.ListAll(req)
 	res = <- req.resp
 	assert.Equal(t, res.Result["Payam"],0, "Counter set to zer0")
 }
@@ -366,19 +366,19 @@ func TestAddWalkerToGroupFail(t *testing.T) {
 
 	req := newRequest()
 	req.Name = "Payam"
-	go p.AddWalker(req)
+	p.AddWalker(req)
 	res := <- req.resp
 	assert.Equal(t, res.Error,nil, "No Error")
 
 	req = newRequest()
 	req.Group = "Apsis"
-	go p.AddGroup(req)
+	p.AddGroup(req)
 	_ = <- req.resp
 
 	req = newRequest()
 	req.Name = "Payam"
 	req.Group = "KTH"
-	go p.AddWalkerToGroup(req)
+	p.AddWalkerToGroup(req)
 	res = <- req.resp
 
 	assert.EqualError(t, res.Error,"GROUP_MISSING","Should generate GROUP_MISSING")
@@ -398,7 +398,7 @@ func TestAddWalkerToGroupMultipleGroups(t *testing.T) {
 
 	req := newRequest()
 	req.Group = "TestGroup"
-	go p.AddGroup(req)
+	p.AddGroup(req)
 	_ = <- req.resp
 
 
@@ -438,7 +438,7 @@ func TestAddWalkerToGroupMultipleGroups(t *testing.T) {
 
 
 	req = newRequest()
-	go p.ListAll(req)
+	p.ListAll(req)
 	res = <- req.resp
 	assert.Equal(t, res.Steps,MAXITERATIONLIMIT * 10, "List all should add up")
 
