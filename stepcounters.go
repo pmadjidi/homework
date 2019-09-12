@@ -39,7 +39,7 @@ func (p *pedometers) startPedometers(quit chan bool) {
 				println("Processing",req.Cmd.String())
 				p.dispatchCommand(req)
 			case <-quit:
-				println("Stoping leaderboard processor")
+				println("Stoping group processor")
 				return
 			default:
 			}

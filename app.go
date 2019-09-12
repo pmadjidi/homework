@@ -10,3 +10,9 @@ func newApp (name string) *App {
 		mux.NewRouter(),
 	}
 }
+
+func (a *App) start() {
+	a.configureRoutes()
+	a.startPedometers(APP.quit)
+	a.startWebServer()
+}

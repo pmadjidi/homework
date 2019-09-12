@@ -166,7 +166,7 @@ func (p *pedometers) processListAllGroups(req *request) {
 			req.resp <- req
 			return
 		} else {
-			ans.Result["Total"] = ans.Steps
+			ans.Result[k] = ans.Steps
 			acc = append(acc,ans.Result)
 		}
 	}
