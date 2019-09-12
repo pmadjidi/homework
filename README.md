@@ -2,7 +2,7 @@
 
 Background
 
-Design influenced by Hoare's work on CSP
+The design is influenced by Hoare's work on CSP
 The homework could have been implemented equally well with mutex guarded maps
 or  Golangs sync.Map for concurrent safe access.
 The former would probably perform slightly better but would not be "Goish" and the later 
