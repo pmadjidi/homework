@@ -51,6 +51,3 @@ Method GET
 
 /get/allgroups
 
-
-
-
