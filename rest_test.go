@@ -2,15 +2,15 @@ package main
 
 import (
 	"encoding/json"
-	"net/http"
 	"github.com/stretchr/testify/assert"
-	"sync"
-	"sync/atomic"
+	"net/http"
+	"runtime"
 	"testing"
 )
 
 func TestRestAPI(t *testing.T) {
 
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	var quit = make(chan bool)
 
 	go func() {
@@ -95,36 +95,6 @@ func TestRestAPI(t *testing.T) {
 	}
 
 	//and so furth....
-
-	resp6, err := http.Get("http://localhost:8080/add/step/mikael")
-	defer resp.Body.Close()
-
-	if err != nil {
-		t.Fail()
-	} else {
-		var result map[string]int
-		json.NewDecoder(resp6.Body).Decode(&result)
-		assert.Equal(t, result["mikael"], 0)
-	}
-
-	var waitgroup sync.WaitGroup
-	var failhttprequest uint64
-
-	for i := 0; i < MAXITERATIONLIMIT; i++ {
-		waitgroup.Add(1)
-		go func() {
-			req, err := http.Get("http://localhost:8080/get/step/mikael")
-			if err != nil {
-				atomic.AddUint64(&failhttprequest, 1)
-			} else {
-				defer req.Body.Close()
-			}
-			waitgroup.Done()
-		}()
-	}
-	waitgroup.Wait()
-	println("Number of concurrent http requests achived....: ",MAXITERATIONLIMIT - failhttprequest)
-
 
 
 }
