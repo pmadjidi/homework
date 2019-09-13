@@ -88,7 +88,7 @@ func (a *App)  registerSteps(w http.ResponseWriter, req *http.Request) {
 		case *TimeOutError:
 			w.WriteHeader(http.StatusRequestTimeout)
 			w.Write([]byte("StatusRequestTimeout 408..."))
-		case *InvalidNameError:
+		case *InvalidNameError,*NegativeStepCounterOrZeroError:
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte("StatusBadRequest 400..."))
 		case *NameDoesNotExistsError:

@@ -70,3 +70,11 @@ type UnknownCmdError struct {
 func (e *UnknownCmdError) Error() string {
 	return fmt.Sprintf("UNKOWN_CMD")
 }
+
+type NegativeStepCounterOrZeroError struct {
+}
+
+func (e *NegativeStepCounterOrZeroError) Error() string {
+	return fmt.Sprintf("NEGATIVE_STEP_COUNTER_OR_ZERO")
+}
+

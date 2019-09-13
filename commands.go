@@ -59,6 +59,9 @@ func (p *pedometers) RegisterSteps(req *request) {
 	if req.Name == EMPTYSTRING {
 		req.Error = &InvalidNameError{}
 		req.resp <- req
+	} else if req.Steps <= 0 {
+		req.Error = &NegativeStepCounterOrZeroError{}
+		req.resp <- req
 	} else {
 		p.execLeadBoardCmd(req)
 	}

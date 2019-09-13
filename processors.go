@@ -31,9 +31,6 @@ func (p *pedometers) processRegisterSteps(req *request) {
 	if !found {
 		req.Error = &NameDoesNotExistsError{}
 	} else {
-		if (req.Steps <= 0) {
-			req.Steps = 1
-		}
 		p.leaderboard[req.Name] += req.Steps
 		req.Steps = p.leaderboard[req.Name]
 	}
