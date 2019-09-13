@@ -78,3 +78,10 @@ func (e *NegativeStepCounterOrZeroError) Error() string {
 	return fmt.Sprintf("NEGATIVE_STEP_COUNTER_OR_ZERO")
 }
 
+type  StepOverFlowError struct {
+}
+
+func (e *StepOverFlowError) Error() string {
+	return fmt.Sprintf("STEP_OVERFLOW")
+}
+
