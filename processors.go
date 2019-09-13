@@ -176,7 +176,7 @@ func (p *pedometers) processListAllGroups(req *request) {
 			return
 		} else {
 
-			ans.Result[k] = ans.Steps
+			ans.Result[k + "-total"] = ans.Steps
 			req.Results[k] = ans.Result
 		}
 	}
