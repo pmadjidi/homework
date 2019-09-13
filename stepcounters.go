@@ -9,8 +9,8 @@ func newPedometers(name string) *pedometers {
 		name,
 		make(leaderboard),
 		make(groups),
-		make(chan *request,MAXQUEUELENGTH),
-		make(chan *request,MAXQUEUELENGTH),
+		make(chan *request, MAXQUEUELENGTH),
+		make(chan *request, MAXQUEUELENGTH),
 	}
 }
 
@@ -21,7 +21,7 @@ func (p *pedometers) startPedometers(quit chan bool) {
 		for {
 			select {
 			case req := <-p.leaderBoardCmd:
-				println("Processing",req.Cmd.String())
+				println("Processing", req.Cmd.String())
 				p.dispatchCommand(req)
 			case <-quit:
 				println("Stoping leaderboard processor")
@@ -36,7 +36,7 @@ func (p *pedometers) startPedometers(quit chan bool) {
 		for {
 			select {
 			case req := <-p.groupsCmd:
-				println("Processing",req.Cmd.String())
+				println("Processing", req.Cmd.String())
 				p.dispatchCommand(req)
 			case <-quit:
 				println("Stoping group processor")
@@ -45,7 +45,6 @@ func (p *pedometers) startPedometers(quit chan bool) {
 			}
 		}
 	}()
-
 
 }
 
@@ -80,17 +79,16 @@ func (p *pedometers) dispatchCommand(req *request) {
 	}
 }
 
-
-func (p *pedometers) execLeadBoardCmd(req *request){
+func (p *pedometers) execLeadBoardCmd(req *request) {
 	select {
-		case p.leaderBoardCmd <- req:
-		case <-time.After(TIMEOUT * time.Second):
-			req.Error = &TimeOutError{}
-			req.resp <- req
+	case p.leaderBoardCmd <- req:
+	case <-time.After(TIMEOUT * time.Second):
+		req.Error = &TimeOutError{}
+		req.resp <- req
 	}
 }
 
-func (p *pedometers) execGroupCmd(req *request){
+func (p *pedometers) execGroupCmd(req *request) {
 	select {
 	case p.groupsCmd <- req:
 	case <-time.After(TIMEOUT * time.Second):
@@ -98,4 +96,3 @@ func (p *pedometers) execGroupCmd(req *request){
 		req.resp <- req
 	}
 }
-

@@ -1,15 +1,12 @@
 package main
 
-
 import (
 	"encoding/json"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
-	"github.com/gorilla/mux"
 	"strconv"
 )
-
-
 
 func (a *App) configureRoutes() {
 
@@ -17,7 +14,7 @@ func (a *App) configureRoutes() {
 	// real life should be post and put
 
 	a.Router.HandleFunc("/add/step/{person}", a.newStepper).Methods("GET")
-	a.Router.HandleFunc("/inc/{person}/{steps}",a.registerSteps).Methods("GET")
+	a.Router.HandleFunc("/inc/{person}/{steps}", a.registerSteps).Methods("GET")
 	a.Router.HandleFunc("/get/step/{person}", a.getStepper).Methods("GET")
 	a.Router.HandleFunc("/get/allsteps", a.getAllSteppers).Methods("GET")
 
@@ -28,18 +25,16 @@ func (a *App) configureRoutes() {
 
 }
 
-func (a* App) startWebServer() {
+func (a *App) startWebServer() {
 	log.Fatal(http.ListenAndServe(":8080", a.Router))
 }
 
-
-
-func (a *App)  newStepper(w http.ResponseWriter, req *http.Request) {
+func (a *App) newStepper(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 	r := newRequest()
 	r.Name = params["person"]
 	a.AddWalker(r)
-	resp := <- r.resp
+	resp := <-r.resp
 
 	if resp.Error != nil {
 		println(r.Error.Error())
@@ -59,11 +54,11 @@ func (a *App)  newStepper(w http.ResponseWriter, req *http.Request) {
 		}
 	} else {
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(outputStep{resp.Name,resp.Steps})
+		json.NewEncoder(w).Encode(outputStep{resp.Name, resp.Steps})
 	}
 }
 
-func (a *App)  registerSteps(w http.ResponseWriter, req *http.Request) {
+func (a *App) registerSteps(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 
 	steps, err := strconv.Atoi(params["steps"])
@@ -80,15 +75,15 @@ func (a *App)  registerSteps(w http.ResponseWriter, req *http.Request) {
 	r.Steps = steps
 
 	a.RegisterSteps(r)
-	resp := <- r.resp
+	resp := <-r.resp
 
 	if resp.Error != nil {
-		println("Error...",r.Error.Error())
+		println("Error...", r.Error.Error())
 		switch resp.Error.(type) {
 		case *TimeOutError:
 			w.WriteHeader(http.StatusRequestTimeout)
 			w.Write([]byte("StatusRequestTimeout 408..."))
-		case *InvalidNameError,*NegativeStepCounterOrZeroError,*StepOverFlowError:
+		case *InvalidNameError, *NegativeStepCounterOrZeroError, *StepOverFlowError:
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte("StatusBadRequest 400..."))
 		case *NameDoesNotExistsError:
@@ -100,16 +95,16 @@ func (a *App)  registerSteps(w http.ResponseWriter, req *http.Request) {
 		}
 	} else {
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(outputStep{resp.Name,resp.Steps})
+		json.NewEncoder(w).Encode(outputStep{resp.Name, resp.Steps})
 	}
 }
 
-func (a *App)  getStepper(w http.ResponseWriter, req *http.Request) {
+func (a *App) getStepper(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 	r := newRequest()
 	r.Name = params["person"]
 	a.GetWalker(r)
-	resp := <- r.resp
+	resp := <-r.resp
 
 	if resp.Error != nil {
 		println(r.Error.Error())
@@ -129,15 +124,15 @@ func (a *App)  getStepper(w http.ResponseWriter, req *http.Request) {
 		}
 	} else {
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(outputStep{resp.Name,resp.Steps})
+		json.NewEncoder(w).Encode(outputStep{resp.Name, resp.Steps})
 	}
 }
 
-func (a *App)  getAllSteppers(w http.ResponseWriter, req *http.Request) {
+func (a *App) getAllSteppers(w http.ResponseWriter, req *http.Request) {
 
 	r := newRequest()
 	a.ListAll(r)
-	resp := <- r.resp
+	resp := <-r.resp
 
 	if resp.Error != nil {
 		println(r.Error.Error())
@@ -155,13 +150,12 @@ func (a *App)  getAllSteppers(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-
-func (a *App)  newGroup(w http.ResponseWriter, req *http.Request) {
+func (a *App) newGroup(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 	r := newRequest()
 	r.Group = params["name"]
 	a.AddGroup(r)
-	resp := <- r.resp
+	resp := <-r.resp
 
 	if resp.Error != nil {
 		println(r.Error.Error())
@@ -181,11 +175,11 @@ func (a *App)  newGroup(w http.ResponseWriter, req *http.Request) {
 		}
 	} else {
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(outputGroup{resp.Group,resp.Steps,resp.Result})
+		json.NewEncoder(w).Encode(outputGroup{resp.Group, resp.Steps, resp.Result})
 	}
 }
 
-func (a *App)  extendGroup(w http.ResponseWriter, req *http.Request) {
+func (a *App) extendGroup(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 
 	r := newRequest()
@@ -193,7 +187,7 @@ func (a *App)  extendGroup(w http.ResponseWriter, req *http.Request) {
 	r.Name = params["person"]
 
 	a.AddWalkerToGroup(r)
-	resp := <- r.resp
+	resp := <-r.resp
 
 	if resp.Error != nil {
 		println(r.Error.Error())
@@ -201,7 +195,7 @@ func (a *App)  extendGroup(w http.ResponseWriter, req *http.Request) {
 		case *TimeOutError:
 			w.WriteHeader(http.StatusRequestTimeout)
 			w.Write([]byte("StatusRequestTimeout 408..."))
-		case *InvalidNameError,*InvalidGroupNameError:
+		case *InvalidNameError, *InvalidGroupNameError:
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte("StatusBadRequest 400..."))
 		case *NameExistsError:
@@ -216,16 +210,16 @@ func (a *App)  extendGroup(w http.ResponseWriter, req *http.Request) {
 		}
 	} else {
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(outputStep{resp.Name,resp.Steps})
+		json.NewEncoder(w).Encode(outputStep{resp.Name, resp.Steps})
 	}
 }
 
-func (a *App)  getGroup(w http.ResponseWriter, req *http.Request) {
+func (a *App) getGroup(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 	r := newRequest()
 	r.Group = params["name"]
 	a.ListGroup(r)
-	resp := <- r.resp
+	resp := <-r.resp
 
 	if resp.Error != nil {
 		println(r.Error.Error())
@@ -245,16 +239,15 @@ func (a *App)  getGroup(w http.ResponseWriter, req *http.Request) {
 		}
 	} else {
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(outputGroup{resp.Group,resp.Steps,resp.Result})
+		json.NewEncoder(w).Encode(outputGroup{resp.Group, resp.Steps, resp.Result})
 	}
 }
 
-
-func (a *App)  getAll(w http.ResponseWriter, req *http.Request) {
+func (a *App) getAll(w http.ResponseWriter, req *http.Request) {
 
 	r := newRequest()
 	a.processListAllGroups(r)
-	resp := <- r.resp
+	resp := <-r.resp
 
 	if resp.Error != nil {
 		println(r.Error.Error())
@@ -271,9 +264,3 @@ func (a *App)  getAll(w http.ResponseWriter, req *http.Request) {
 		json.NewEncoder(w).Encode(resp.Results)
 	}
 }
-
-
-
-
-
-

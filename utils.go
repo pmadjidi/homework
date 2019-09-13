@@ -1,6 +1,5 @@
 package main
 
-
 import "math/rand"
 
 func RandomString(n int) string {

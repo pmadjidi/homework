@@ -1,7 +1,5 @@
 package main
 
-
-
 func (p *pedometers) processAddWalker(req *request) {
 	_, found := p.leaderboard[req.Name]
 	if found {
@@ -12,8 +10,6 @@ func (p *pedometers) processAddWalker(req *request) {
 	req.resp <- req
 }
 
-
-
 func (p *pedometers) processGetWalker(req *request) {
 	steps, found := p.leaderboard[req.Name]
 	if !found {
@@ -23,8 +19,6 @@ func (p *pedometers) processGetWalker(req *request) {
 	}
 	req.resp <- req
 }
-
-
 
 func (p *pedometers) processRegisterSteps(req *request) {
 	_, found := p.leaderboard[req.Name]
@@ -37,8 +31,6 @@ func (p *pedometers) processRegisterSteps(req *request) {
 	req.resp <- req
 }
 
-
-
 func (p *pedometers) processAddGroup(req *request) {
 	_, found := p.groups[req.Group]
 	if found {
@@ -48,10 +40,6 @@ func (p *pedometers) processAddGroup(req *request) {
 	}
 	req.resp <- req
 }
-
-
-
-
 
 func (p *pedometers) processAddWalkerToGroup(req *request) {
 	_, groupfound := p.groups[req.Group]
@@ -72,7 +60,7 @@ func (p *pedometers) processAddWalkerToGroup(req *request) {
 		newReq := newRequest()
 		newReq.Name = req.Name
 		p.GetWalker(newReq)
-		newResp := <- newReq.resp
+		newResp := <-newReq.resp
 		if newResp.Error != nil {
 			req.Error = newResp.Error
 		} else {
@@ -83,13 +71,11 @@ func (p *pedometers) processAddWalkerToGroup(req *request) {
 	req.resp <- req
 }
 
-
 //not implemented yet...
 func (p *pedometers) processDeleteWalker(req *request) {
 	req.Error = &NotImplementedError{}
 	req.resp <- req
 }
-
 
 func (p *pedometers) processResetSteps(req *request) {
 	_, found := p.leaderboard[req.Name]
@@ -101,8 +87,6 @@ func (p *pedometers) processResetSteps(req *request) {
 	req.resp <- req
 }
 
-
-
 func (p *pedometers) processListGroup(req *request) {
 	aGroup, found := p.groups[req.Group]
 	if !found {
@@ -110,19 +94,19 @@ func (p *pedometers) processListGroup(req *request) {
 	} else {
 		newReq := newRequest()
 		newReq.Group = req.Group
-		 newReq.Result = make(leaderboard)
+		newReq.Result = make(leaderboard)
 		for k, _ := range aGroup {
 			newReq.Result[k] = 0
 		}
 		p.scan(newReq)
-		newResp := <- newReq.resp
+		newResp := <-newReq.resp
 		if newResp.Error != nil {
 			req.Error = newResp.Error
 		} else {
 			req.Result = newReq.Result
-			for k,v := range req.Result {
+			for k, v := range req.Result {
 				if v == NOTFOUND { // prepare for implementation of delte function
-					delete(req.Result,k)
+					delete(req.Result, k)
 				} else {
 					req.Steps += v
 				}
@@ -131,7 +115,6 @@ func (p *pedometers) processListGroup(req *request) {
 	}
 	req.resp <- req
 }
-
 
 func (p *pedometers) processListAll(req *request) {
 	result := make(leaderboard)
@@ -143,7 +126,6 @@ func (p *pedometers) processListAll(req *request) {
 	req.Result = result
 	req.resp <- req
 }
-
 
 func (p *pedometers) processScan(req *request) {
 	if req.Group == EMPTYSTRING {
@@ -176,11 +158,10 @@ func (p *pedometers) processListAllGroups(req *request) {
 			return
 		} else {
 
-			ans.Result[k + "-total"] = ans.Steps
+			ans.Result[k+"-total"] = ans.Steps
 			req.Results[k] = ans.Result
 		}
 	}
 	req.resp <- req
 
 }
-

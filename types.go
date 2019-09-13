@@ -17,11 +17,10 @@ Stoping leaderboard processor
 Stoping group processor
 PASS
 ok  	github.com/pmadjidi/homework	17.186s
- */
+*/
 
-
-const MAXQUEUELENGTH = 100000 // potentially 100.000 open http requests....
-const MAXITERATIONLIMIT = 10000// concurrent request to API server
+const MAXQUEUELENGTH = 100000   // potentially 100.000 open http requests....
+const MAXITERATIONLIMIT = 10000 // concurrent request to API server
 
 const MAXNUMBEROFSTEPS = 1000
 
@@ -47,7 +46,7 @@ type outputStep struct {
 }
 
 type outputGroup struct {
-	Name  string `json:"name"`
-	Steps int    `json:"Steps"`
-	Members leaderboard  `json:"members"`
+	Name    string      `json:"name"`
+	Steps   int         `json:"Steps"`
+	Members leaderboard `json:"members"`
 }

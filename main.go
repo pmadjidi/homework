@@ -3,14 +3,12 @@ package main
 import (
 	"os"
 	"os/signal"
+	"runtime"
 	"syscall"
 	"time"
-	"runtime"
 )
 
 var APP *App
-
-
 
 func main() {
 
@@ -29,4 +27,3 @@ func main() {
 	APP.start()
 
 }
-

@@ -11,7 +11,6 @@ func (e *TimeOutError) Error() string {
 	return fmt.Sprintf("TIMEOUT")
 }
 
-
 type InvalidNameError struct {
 }
 
@@ -33,15 +32,12 @@ func (e *NameDoesNotExistsError) Error() string {
 	return fmt.Sprintf("NAME_MISSING")
 }
 
-
 type InvalidGroupNameError struct {
 }
 
 func (e *InvalidGroupNameError) Error() string {
 	return fmt.Sprintf("NO_GROUP")
 }
-
-
 
 type GroupExistsError struct {
 }
@@ -78,10 +74,9 @@ func (e *NegativeStepCounterOrZeroError) Error() string {
 	return fmt.Sprintf("NEGATIVE_STEP_COUNTER_OR_ZERO")
 }
 
-type  StepOverFlowError struct {
+type StepOverFlowError struct {
 }
 
 func (e *StepOverFlowError) Error() string {
 	return fmt.Sprintf("STEP_OVERFLOW")
 }
-
