@@ -121,6 +121,7 @@ func TestConcurrentWalker(t *testing.T) {
 		go func() {
 			req := newRequest()
 			req.Name = "Payam"
+			req.Steps = 1
 			p.RegisterSteps(req)
 			<- req.resp
 			waitgroup.Done()
@@ -387,7 +388,7 @@ func TestAddWalkerToGroupFail(t *testing.T) {
 
 
 
-func TestAddWalkerToGroupMultipleGroups(t *testing.T) {
+func TestAddMultpleWalkersToMultipleGroups(t *testing.T) {
 
 	quit := make(chan bool)
 	p := newPedometers("TestPedometers")

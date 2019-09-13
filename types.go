@@ -21,7 +21,7 @@ ok  	github.com/pmadjidi/homework	17.186s
 
 
 const MAXQUEUELENGTH = 100000 // potentially 100.000 open http requests....
-const MAXITERATIONLIMIT = 40000// concurrent request to API server
+const MAXITERATIONLIMIT = 10000// concurrent request to API server
 
 type pedometers struct {
 	name string
