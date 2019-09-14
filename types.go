@@ -29,7 +29,9 @@ type pedometers struct {
 	leaderboard
 	groups
 	leaderBoardCmd chan *request
-	groupsCmd      chan *request
+	leaderBoardCmdInternal chan *request // internal loop
+	groupsCmd chan *request
+	groupsCmdInternal chan *request // internal loop
 }
 
 type App struct {
@@ -50,3 +52,5 @@ type outputGroup struct {
 	Steps   int         `json:"Steps"`
 	Members leaderboard `json:"members"`
 }
+
+type source int

@@ -5,6 +5,7 @@ import "fmt"
 
 type request struct {
 	Cmd     command `json:"cmd"`
+	Source  source  `json:"source"`
 	Name    string  `json:"name"`
 	Group   string  `json:"group"`
 	Steps   int     `json:"steps"`
@@ -17,6 +18,7 @@ type request struct {
 func newRequest() *request {
 	return &request{
 		NOP,
+		EXTERNAL,
 		"",
 		"",
 		0,
@@ -26,6 +28,23 @@ func newRequest() *request {
 		make(chan *request, 1),
 	}
 }
+
+func newRequestInternal() *request {
+	return &request{
+		NOP,
+		INTERNAL,
+		"",
+		"",
+		0,
+		nil,
+		nil,
+		make(map[string]leaderboard),
+		make(chan *request, 1),
+	}
+}
+
+
+
 
 func (r *request) print() {
 	js, err := json.MarshalIndent(r, "", "\t")

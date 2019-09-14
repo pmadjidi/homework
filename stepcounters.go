@@ -4,11 +4,26 @@ import (
 	"time"
 )
 
+
+const (
+	INTERNAL source = iota
+	EXTERNAL
+)
+
+func (s source) String() string {
+	return [...]string{
+		"INTERNAL",
+		"EXTERNAL",
+	}[s]
+}
+
 func newPedometers(name string) *pedometers {
 	return &pedometers{
 		name,
 		make(leaderboard),
 		make(groups),
+		make(chan *request, MAXQUEUELENGTH),
+		make(chan *request, MAXQUEUELENGTH),
 		make(chan *request, MAXQUEUELENGTH),
 		make(chan *request, MAXQUEUELENGTH),
 	}
@@ -20,8 +35,15 @@ func (p *pedometers) startPedometers(quit chan bool) {
 		println("Starting leaderboard processor")
 		for {
 			select {
+			case req := <-p.leaderBoardCmdInternal:
+				println("Processing leaderboard Internal queue", req.Cmd.String())
+				p.dispatchCommand(req)
+			default:
+			}
+
+			select {
 			case req := <-p.leaderBoardCmd:
-				println("Processing", req.Cmd.String())
+				println("Processing leaderboard queue", req.Cmd.String())
 				p.dispatchCommand(req)
 			case <-quit:
 				println("Stoping leaderboard processor")
@@ -34,9 +56,18 @@ func (p *pedometers) startPedometers(quit chan bool) {
 	go func() {
 		println("Starting group processors")
 		for {
+
+			select {
+			case req := <-p.groupsCmdInternal:
+				println("Processing groups internal queue", req.Cmd.String())
+				p.dispatchCommand(req)
+			default:
+			}
+
+
 			select {
 			case req := <-p.groupsCmd:
-				println("Processing", req.Cmd.String())
+				println("Processing groups  queue", req.Cmd.String())
 				p.dispatchCommand(req)
 			case <-quit:
 				println("Stoping group processor")
@@ -80,19 +111,40 @@ func (p *pedometers) dispatchCommand(req *request) {
 }
 
 func (p *pedometers) execLeadBoardCmd(req *request) {
-	select {
-	case p.leaderBoardCmd <- req:
-	case <-time.After(TIMEOUT * time.Second):
-		req.Error = &TimeOutError{}
-		req.resp <- req
+	if (req.Source == EXTERNAL) {
+		select {
+		case p.leaderBoardCmd <- req:
+		case <-time.After(TIMEOUT * time.Second):
+			req.Error = &TimeOutError{}
+			req.resp <- req
+		}
+	} else {
+		select {
+		case p.leaderBoardCmdInternal <- req:
+		case <-time.After(TIMEOUT * time.Second):
+			req.Error = &TimeOutError{}
+			req.resp <- req
+		}
 	}
 }
 
+
+
+
 func (p *pedometers) execGroupCmd(req *request) {
-	select {
-	case p.groupsCmd <- req:
-	case <-time.After(TIMEOUT * time.Second):
-		req.Error = &TimeOutError{}
-		req.resp <- req
+	if (req.Source == EXTERNAL) {
+		select {
+		case p.groupsCmd <- req:
+		case <-time.After(TIMEOUT * time.Second):
+			req.Error = &TimeOutError{}
+			req.resp <- req
+		}
+	} else {
+		select {
+		case p.groupsCmdInternal <- req:
+		case <-time.After(TIMEOUT * time.Second):
+			req.Error = &TimeOutError{}
+			req.resp <- req
+		}
 	}
 }

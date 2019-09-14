@@ -57,7 +57,7 @@ func (p *pedometers) processAddWalkerToGroup(req *request) {
 		req.resp <- req
 		return
 	} else {
-		newReq := newRequest()
+		newReq := newRequestInternal()
 		newReq.Name = req.Name
 		p.GetWalker(newReq)
 		newResp := <-newReq.resp
@@ -92,7 +92,7 @@ func (p *pedometers) processListGroup(req *request) {
 	if !found {
 		req.Error = &GroupDoesNotExistsError{}
 	} else {
-		newReq := newRequest()
+		newReq := newRequestInternal()
 		newReq.Group = req.Group
 		newReq.Result = make(leaderboard)
 		for k, _ := range aGroup {
@@ -148,7 +148,7 @@ func (p *pedometers) processScan(req *request) {
 func (p *pedometers) processListAllGroups(req *request) {
 
 	for k, _ := range p.groups {
-		newRequest := newRequest()
+		newRequest := newRequestInternal()
 		newRequest.Group = k
 		p.ListGroup(newRequest)
 		ans := <-newRequest.resp
