@@ -24,7 +24,7 @@ func newRequest() *request {
 		0,
 		nil,
 		nil,
-		make(map[string]leaderboard),
+		nil,
 		make(chan *request, 1),
 	}
 }
@@ -38,7 +38,7 @@ func newRequestInternal() *request {
 		0,
 		nil,
 		nil,
-		make(map[string]leaderboard),
+		nil,
 		make(chan *request, 1),
 	}
 }

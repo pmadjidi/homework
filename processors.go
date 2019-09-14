@@ -146,7 +146,7 @@ func (p *pedometers) processScan(req *request) {
 }
 
 func (p *pedometers) processListAllGroups(req *request) {
-
+	req.Results = make(map[string]leaderboard)
 	for k, _ := range p.groups {
 		newRequest := newRequestInternal()
 		newRequest.Group = k

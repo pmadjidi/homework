@@ -17,7 +17,7 @@ func TestRestAPI(t *testing.T) {
 		APP = newApp("Apsis Homework")
 		APP.start()
 		<-quit
-		APP.shotdown()
+		APP.shutdown()
 	}()
 
 	defer close(quit)
