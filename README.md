@@ -12,6 +12,7 @@ All thought Golangs sync.Map could be a solution to scale a cross massive multip
 To scale beyond single host solutions, distributed event logs and event processors is a way to proceed.
 
 Some performance data is gathered, please refer to perfdata.txt
+API hosted on http://payam.ite.kth.se:8080
 
 
 To run locally:
