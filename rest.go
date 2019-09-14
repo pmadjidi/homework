@@ -13,6 +13,7 @@ func (a *App) configureRoutes() {
 	//defining all methods as GET just for browser test convenience, creating and updateing methods in
 	// real life should be post and put
 
+	a.Router.HandleFunc("/", a.hello).Methods("GET")
 	a.Router.HandleFunc("/add/step/{person}", a.newStepper).Methods("GET")
 	a.Router.HandleFunc("/inc/{person}/{steps}", a.registerSteps).Methods("GET")
 	a.Router.HandleFunc("/get/step/{person}", a.getStepper).Methods("GET")
@@ -28,6 +29,11 @@ func (a *App) configureRoutes() {
 func (a *App) startWebServer() {
 	log.Fatal(http.ListenAndServe(":8080", a.Router))
 }
+
+func (a *App) hello(w http.ResponseWriter, req *http.Request) {
+	json.NewEncoder(w).Encode("homework....")
+}
+
 
 func (a *App) newStepper(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
