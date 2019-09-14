@@ -19,7 +19,7 @@ func (a *App) start() {
 	a.startWebServer()
 }
 
-func (a *App) shotdown() {
+func (a *App) shutdown() {
 	fmt.Println("Exiting...")
 	close(a.quit)
 }
