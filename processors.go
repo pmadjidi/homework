@@ -6,7 +6,6 @@ func (p *pedometers) processAddWalker(req *request) {
 		req.Error = &NameExistsError{}
 	} else if len(p.leaderboard) >= MAXNUMBERSOFWALKERS {
 		req.Error = &MaxNumberOFWalkersReachedError{}
-		req.resp <- req
 	} else {
 		p.leaderboard[req.Name] = 0
 	}
@@ -51,35 +50,23 @@ func (p *pedometers) processAddWalkerToGroup(req *request) {
 
 	if !groupfound {
 		req.Error = &GroupDoesNotExistsError{}
-		req.resp <- req
-		return
-	}
-
-	_, userfound := p.groups[req.Group][req.Name]
-
-	if userfound {
+	} else if _, userfound := p.groups[req.Group][req.Name]; userfound {
 		req.Error = &NameExistsError{}
-		req.resp <- req
-		return
-	}
-
-	if len(aUserGroup) >= MAXNUMBEROFWALKERSINGROUP {
+	} else if len(aUserGroup) >= MAXNUMBEROFWALKERSINGROUP {
 		req.Error = &MaxNumberOFWalkersInGroupsReachedError{}
-		req.resp <- req
-		return
-	}
-
-	newReq := newRequestInternal()
-	newReq.Name = req.Name
-	p.GetWalker(newReq)
-	newResp := <-newReq.resp
-	if newResp.Error != nil {
-		req.Error = newResp.Error
 	} else {
-		p.groups[req.Group][req.Name] = true
-		req.Steps = newResp.Steps
-	}
 
+		newReq := newRequestInternal()
+		newReq.Name = req.Name
+		p.GetWalker(newReq)
+		newResp := <-newReq.resp
+		if newResp.Error != nil {
+			req.Error = newResp.Error
+		} else {
+			p.groups[req.Group][req.Name] = true
+			req.Steps = newResp.Steps
+		}
+	}
 	req.resp <- req
 }
 
