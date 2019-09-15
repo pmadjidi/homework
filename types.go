@@ -9,29 +9,29 @@ const EMPTYSTRING = ""
 const NOTFOUND = -1
 const TIMEOUT = 2
 
-/*
+// potentially 100.000 open http requests, OBS buffered channels
+// Obs buffered channels create risk for data loss on server crash...
+// Tune for low latency on external http requests
 
-on 8 core macbookpro 2018 with 32GIG memory, 40.000 concurrent connections....
+const MAXQUEUELENGTH = 100000
 
-Stoping leaderboard processor
-Stoping group processor
-PASS
-ok  	github.com/pmadjidi/homework	17.186s
-*/
+const MAXITERATIONLIMIT = 1000 // concurrent request to API server
 
-const MAXQUEUELENGTH = 100000   // potentially 100.000 open http requests....
-const MAXITERATIONLIMIT = 10000 // concurrent request to API server
+// always good to put a bound on datastructures...
 
-const MAXNUMBEROFSTEPS = 1000
+const MAXNUMBEROFSTEPSINPUT = 1000
+const MAXNUMBERSOFWALKERS = 1000000
+const MAXNUMBEROFGROUPS = 100000
+const MAXNUMBEROFWALKERSINGROUP = 2000
 
 type pedometers struct {
 	name string
 	leaderboard
 	groups
-	leaderBoardCmd chan *request
+	leaderBoardCmd         chan *request
 	leaderBoardCmdInternal chan *request // internal loop
-	groupsCmd chan *request
-	groupsCmdInternal chan *request // internal loop
+	groupsCmd              chan *request
+	groupsCmdInternal      chan *request // internal loop
 }
 
 type App struct {

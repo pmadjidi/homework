@@ -4,7 +4,6 @@ import (
 	"time"
 )
 
-
 const (
 	INTERNAL source = iota
 	EXTERNAL
@@ -38,10 +37,6 @@ func (p *pedometers) startPedometers(quit chan bool) {
 			case req := <-p.leaderBoardCmdInternal:
 				println("Processing leaderboard Internal queue", req.Cmd.String())
 				p.dispatchCommand(req)
-			default:
-			}
-
-			select {
 			case req := <-p.leaderBoardCmd:
 				println("Processing leaderboard queue", req.Cmd.String())
 				p.dispatchCommand(req)
@@ -56,16 +51,10 @@ func (p *pedometers) startPedometers(quit chan bool) {
 	go func() {
 		println("Starting group processors")
 		for {
-
 			select {
 			case req := <-p.groupsCmdInternal:
 				println("Processing groups internal queue", req.Cmd.String())
 				p.dispatchCommand(req)
-			default:
-			}
-
-
-			select {
 			case req := <-p.groupsCmd:
 				println("Processing groups  queue", req.Cmd.String())
 				p.dispatchCommand(req)
@@ -127,9 +116,6 @@ func (p *pedometers) execLeadBoardCmd(req *request) {
 		}
 	}
 }
-
-
-
 
 func (p *pedometers) execGroupCmd(req *request) {
 	if (req.Source == EXTERNAL) {

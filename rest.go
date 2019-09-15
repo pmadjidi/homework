@@ -34,7 +34,6 @@ func (a *App) hello(w http.ResponseWriter, req *http.Request) {
 	json.NewEncoder(w).Encode("homework....")
 }
 
-
 func (a *App) newStepper(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 	r := newRequest()
@@ -54,6 +53,9 @@ func (a *App) newStepper(w http.ResponseWriter, req *http.Request) {
 		case *NameExistsError:
 			w.WriteHeader(http.StatusConflict)
 			w.Write([]byte("StatusConflict 409..."))
+		case *MaxNumberOFWalkersReachedError:
+			w.WriteHeader(http.StatusRequestEntityTooLarge)
+			w.Write([]byte("StatusConflict 413..."))
 		default:
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("StatusInternalServerError 500..."))
@@ -89,12 +91,15 @@ func (a *App) registerSteps(w http.ResponseWriter, req *http.Request) {
 		case *TimeOutError:
 			w.WriteHeader(http.StatusRequestTimeout)
 			w.Write([]byte("StatusRequestTimeout 408..."))
-		case *InvalidNameError, *NegativeStepCounterOrZeroError, *StepOverFlowError:
+		case *InvalidNameError, *NegativeStepCounterOrZeroError:
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte("StatusBadRequest 400..."))
 		case *NameDoesNotExistsError:
 			w.WriteHeader(http.StatusNotFound)
 			w.Write([]byte("StatusNotFound 404..."))
+		case  *StepInputOverFlowError:
+			w.WriteHeader(http.StatusRequestEntityTooLarge)
+			w.Write([]byte("StatusConflict 413..."))
 		default:
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("StatusInternalServerError 500..."))
@@ -175,6 +180,9 @@ func (a *App) newGroup(w http.ResponseWriter, req *http.Request) {
 		case *GroupExistsError:
 			w.WriteHeader(http.StatusConflict)
 			w.Write([]byte("StatusConflict 409..."))
+		case *MaxNumberOFGroupsReachedError:
+			w.WriteHeader(http.StatusRequestEntityTooLarge)
+			w.Write([]byte("StatusConflict 413..."))
 		default:
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("StatusInternalServerError 500..."))
@@ -210,6 +218,9 @@ func (a *App) extendGroup(w http.ResponseWriter, req *http.Request) {
 		case *GroupDoesNotExistsError:
 			w.WriteHeader(http.StatusNotFound)
 			w.Write([]byte("StatusNotFound 404..."))
+		case *MaxNumberOFWalkersInGroupsReachedError:
+			w.WriteHeader(http.StatusRequestEntityTooLarge)
+			w.Write([]byte("StatusConflict 413..."))
 		default:
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("StatusInternalServerError 500..."))
@@ -259,6 +270,7 @@ func (a *App) getAll(w http.ResponseWriter, req *http.Request) {
 		println(r.Error.Error())
 		switch resp.Error.(type) {
 		case *TimeOutError:
+			println("getAll, timeout...")
 			w.WriteHeader(http.StatusRequestTimeout)
 			w.Write([]byte("StatusRequestTimeout 408..."))
 		default:

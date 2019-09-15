@@ -43,9 +43,6 @@ func newRequestInternal() *request {
 	}
 }
 
-
-
-
 func (r *request) print() {
 	js, err := json.MarshalIndent(r, "", "\t")
 	if err != nil {

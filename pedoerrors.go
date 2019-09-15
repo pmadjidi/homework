@@ -74,9 +74,30 @@ func (e *NegativeStepCounterOrZeroError) Error() string {
 	return fmt.Sprintf("NEGATIVE_STEP_COUNTER_OR_ZERO")
 }
 
-type StepOverFlowError struct {
+type StepInputOverFlowError struct {
 }
 
-func (e *StepOverFlowError) Error() string {
-	return fmt.Sprintf("STEP_OVERFLOW")
+func (e *StepInputOverFlowError) Error() string {
+	return fmt.Sprintf("STEP_INPUT_OVERFLOW")
+}
+
+type MaxNumberOFWalkersReachedError struct {
+}
+
+func (e *MaxNumberOFWalkersReachedError) Error() string {
+	return fmt.Sprintf("MAX_NUMBER_OF_WALKERS_REACHED")
+}
+
+type MaxNumberOFGroupsReachedError struct {
+}
+
+func (e *MaxNumberOFGroupsReachedError) Error() string {
+	return fmt.Sprintf("MAX_NUMBER_OF_GROUPS_REACHED")
+}
+
+type MaxNumberOFWalkersInGroupsReachedError struct {
+}
+
+func (e *MaxNumberOFWalkersInGroupsReachedError) Error() string {
+	return fmt.Sprintf("MAX_NUMBER_OF_WALKERS_IN_GROUP_REACHED")
 }
