@@ -55,7 +55,7 @@ func (a *App) newStepper(w http.ResponseWriter, req *http.Request) {
 			w.Write([]byte("StatusConflict 409..."))
 		case *MaxNumberOFWalkersReachedError:
 			w.WriteHeader(http.StatusRequestEntityTooLarge)
-			w.Write([]byte("StatusConflict 413..."))
+			w.Write([]byte("StatusRequestEntityTooLarge 413..."))
 		default:
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("StatusInternalServerError 500..."))
@@ -99,7 +99,7 @@ func (a *App) registerSteps(w http.ResponseWriter, req *http.Request) {
 			w.Write([]byte("StatusNotFound 404..."))
 		case  *StepInputOverFlowError:
 			w.WriteHeader(http.StatusRequestEntityTooLarge)
-			w.Write([]byte("StatusConflict 413..."))
+			w.Write([]byte("StatusRequestEntityTooLarge 413..."))
 		default:
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("StatusInternalServerError 500..."))
@@ -182,8 +182,8 @@ func (a *App) newGroup(w http.ResponseWriter, req *http.Request) {
 			w.Write([]byte("StatusConflict 409..."))
 		case *MaxNumberOFGroupsReachedError:
 			w.WriteHeader(http.StatusRequestEntityTooLarge)
-			w.Write([]byte("StatusConflict 413..."))
-		default:
+			w.Write([]byte("StatusRequestEntityTooLarge 413..."))
+			default:
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("StatusInternalServerError 500..."))
 		}
@@ -220,7 +220,7 @@ func (a *App) extendGroup(w http.ResponseWriter, req *http.Request) {
 			w.Write([]byte("StatusNotFound 404..."))
 		case *MaxNumberOFWalkersInGroupsReachedError:
 			w.WriteHeader(http.StatusRequestEntityTooLarge)
-			w.Write([]byte("StatusConflict 413..."))
+			w.Write([]byte("StatusRequestEntityTooLarge 413..."))
 		default:
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("StatusInternalServerError 500..."))
