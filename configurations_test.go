@@ -15,6 +15,7 @@ func TestReadConfigurationOnDefaults(t *testing.T) {
 	os.Setenv("MAXNUMBERSOFWALKERS","")
 	os.Setenv("MAXNUMBEROFGROUPS","")
 	os.Setenv("MAXNUMBEROFWALKERSINGROUP","")
+	os.Setenv("TIMEOUT","")
 
 	config := readConfig()
 
@@ -24,7 +25,7 @@ func TestReadConfigurationOnDefaults(t *testing.T) {
 	assert.Equal(t, config.MAXNUMBERSOFWALKERS,1000000 , "shoud be 100000")
 	assert.Equal(t, config.MAXNUMBEROFGROUPS,100000 , "shoud be 100000")
 	assert.Equal(t, config.MAXNUMBEROFWALKERSINGROUP,2000 , "shoud be 100000")
-
+	assert.Equal(t, config.TIMEOUT,2 , "shoud be 2")
 }
 
 func TestReadConfigurationOnEnv(t *testing.T) {
@@ -35,6 +36,7 @@ func TestReadConfigurationOnEnv(t *testing.T) {
 	os.Setenv("MAXNUMBERSOFWALKERS","60000")
 	os.Setenv("MAXNUMBEROFGROUPS","70000")
 	os.Setenv("MAXNUMBEROFWALKERSINGROUP","80000")
+	os.Setenv("TIMEOUT","3")
 
 	config := readConfig()
 
@@ -44,6 +46,7 @@ func TestReadConfigurationOnEnv(t *testing.T) {
 	assert.Equal(t, config.MAXNUMBERSOFWALKERS,60000 , "shoud be 60000")
 	assert.Equal(t, config.MAXNUMBEROFGROUPS,70000 , "shoud be 70000")
 	assert.Equal(t, config.MAXNUMBEROFWALKERSINGROUP,80000 , "shoud be 80000")
+	assert.Equal(t, config.TIMEOUT,3 , "shoud be 3")
 }
 
 
@@ -55,6 +58,7 @@ func TestReadConfigurationOneMissing(t *testing.T) {
 	os.Setenv("MAXNUMBERSOFWALKERS","60000")
 	os.Setenv("MAXNUMBEROFGROUPS","70000")
 	os.Setenv("MAXNUMBEROFWALKERSINGROUP","80000")
+	os.Setenv("TIMEOUT","4")
 
 	config := readConfig()
 
@@ -64,6 +68,7 @@ func TestReadConfigurationOneMissing(t *testing.T) {
 	assert.Equal(t, config.MAXNUMBERSOFWALKERS,60000 , "shoud be 60000")
 	assert.Equal(t, config.MAXNUMBEROFGROUPS,70000 , "shoud be 70000")
 	assert.Equal(t, config.MAXNUMBEROFWALKERSINGROUP,80000 , "shoud be 80000")
+	assert.Equal(t, config.TIMEOUT,4 , "shoud be 4")
 }
 
 

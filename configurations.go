@@ -29,6 +29,7 @@ func readIntFromEnv(name string) (int) {
 	MAXNUMBERSOFWALKERS := 1000000
 	MAXNUMBEROFGROUPS := 100000
 	MAXNUMBEROFWALKERSINGROUP := 2000
+	TIMEOUT := 2
 
 	fromEnv := os.Getenv(name)
 	iEnv, err := strconv.Atoi(fromEnv)
@@ -70,6 +71,12 @@ func readIntFromEnv(name string) (int) {
 		} else {
 			result = iEnv
 		}
+	case "TIMEOUT":
+		if err != nil {
+			result = TIMEOUT
+		} else {
+			result = iEnv
+		}
 	}
 	return result
 }
@@ -82,5 +89,6 @@ func readConfig() *config {
 		readIntFromEnv("MAXNUMBERSOFWALKERS"),
 		readIntFromEnv("MAXNUMBEROFGROUPS"),
 		readIntFromEnv("MAXNUMBEROFWALKERSINGROUP"),
+		readIntFromEnv("TIMEOUT"),
 	}
 }

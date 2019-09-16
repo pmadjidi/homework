@@ -1,6 +1,8 @@
 package main
 
-import "github.com/gorilla/mux"
+import (
+	"github.com/gorilla/mux"
+)
 
 type leaderboard map[string]int
 type groups map[string]map[string]bool
@@ -24,6 +26,7 @@ type config struct {
 	MAXNUMBERSOFWALKERS       int
 	MAXNUMBEROFGROUPS         int
 	MAXNUMBEROFWALKERSINGROUP int
+	TIMEOUT int
 }
 
 type App struct {

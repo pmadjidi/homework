@@ -101,17 +101,18 @@ func (p *pedometers) dispatchCommand(req *request) {
 }
 
 func (p *pedometers) execLeadBoardCmd(req *request) {
+	waitDuration := time.Duration(p.config.TIMEOUT)
 	if (req.Source == EXTERNAL) {
 		select {
 		case p.leaderBoardCmd <- req:
-		case <-time.After(TIMEOUT * time.Second):
+		case <-time.After(waitDuration * time.Second):
 			req.Error = &TimeOutError{}
 			req.resp <- req
 		}
 	} else {
 		select {
 		case p.leaderBoardCmdInternal <- req:
-		case <-time.After(TIMEOUT * time.Second):
+		case <-time.After(waitDuration  * time.Second):
 			req.Error = &TimeOutError{}
 			req.resp <- req
 		}
@@ -119,17 +120,18 @@ func (p *pedometers) execLeadBoardCmd(req *request) {
 }
 
 func (p *pedometers) execGroupCmd(req *request) {
+	waitDuration := time.Duration(p.config.TIMEOUT)
 	if (req.Source == EXTERNAL) {
 		select {
 		case p.groupsCmd <- req:
-		case <-time.After(TIMEOUT * time.Second):
+		case <-time.After(waitDuration * time.Second):
 			req.Error = &TimeOutError{}
 			req.resp <- req
 		}
 	} else {
 		select {
 		case p.groupsCmdInternal <- req:
-		case <-time.After(TIMEOUT * time.Second):
+		case <-time.After(waitDuration  * time.Second):
 			req.Error = &TimeOutError{}
 			req.resp <- req
 		}
