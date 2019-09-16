@@ -23,7 +23,9 @@ func TestRestAPI(t *testing.T) {
 	defer close(quit)
 
 	resp, err := http.Get("http://localhost:8080/add/step/payam")
-	defer resp.Body.Close()
+	if err == nil {
+		defer resp.Body.Close()
+	}
 
 	if err != nil {
 		t.Fail()
@@ -34,7 +36,10 @@ func TestRestAPI(t *testing.T) {
 	}
 
 	resp1, err := http.Get("http://localhost:8080/add/group/t1")
-	defer resp1.Body.Close()
+	if err == nil {
+		defer resp1.Body.Close()
+	}
+
 
 	if err != nil {
 		t.Fail()
@@ -46,7 +51,9 @@ func TestRestAPI(t *testing.T) {
 	}
 
 	resp2, err := http.Get("http://localhost:8080/extend/t1/payam")
-	defer resp2.Body.Close()
+	if err == nil {
+		defer resp2.Body.Close()
+	}
 
 	if err != nil {
 		t.Fail()
@@ -58,7 +65,10 @@ func TestRestAPI(t *testing.T) {
 	}
 
 	resp3, err := http.Get("http://localhost:8080/inc/payam/10")
-	defer resp3.Body.Close()
+	if err == nil {
+		defer resp3.Body.Close()
+	}
+
 
 	if err != nil {
 		t.Fail()
@@ -70,7 +80,11 @@ func TestRestAPI(t *testing.T) {
 	}
 
 	resp4, err := http.Get("http://localhost:8080/get/group/t1")
-	defer resp4.Body.Close()
+	if err == nil {
+		defer resp4.Body.Close()
+	}
+
+
 
 	if err != nil {
 		t.Fail()
@@ -83,7 +97,11 @@ func TestRestAPI(t *testing.T) {
 	}
 
 	resp5, err := http.Get("http://localhost:8080/add/group/t2")
-	defer resp5.Body.Close()
+	if err == nil {
+		defer resp5.Body.Close()
+	}
+
+	
 
 	if err != nil {
 		t.Fail()
