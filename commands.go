@@ -37,6 +37,7 @@ func (p *pedometers) AddWalker(req *request) {
 	if req.Name == EMPTYSTRING {
 		req.Error = &InvalidNameError{}
 		req.resp <- req
+		close(req.resp)
 	} else {
 		p.execLeadBoardCmd(req)
 	}
@@ -47,6 +48,7 @@ func (p *pedometers) GetWalker(req *request) {
 	if req.Name == EMPTYSTRING {
 		req.Error = &InvalidNameError{}
 		req.resp <- req
+		close(req.resp)
 	} else {
 		p.execLeadBoardCmd(req)
 	}
@@ -57,12 +59,15 @@ func (p *pedometers) RegisterSteps(req *request) {
 	if req.Name == EMPTYSTRING {
 		req.Error = &InvalidNameError{}
 		req.resp <- req
+		close(req.resp)
 	} else if req.Steps <= 0 {
 		req.Error = &NegativeStepCounterOrZeroError{}
 		req.resp <- req
+		close(req.resp)
 	} else if req.Steps >= p.config.MAXNUMBEROFSTEPSINPUT {
 		req.Error = &StepInputOverFlowError{}
 		req.resp <- req
+		close(req.resp)
 	} else {
 		p.execLeadBoardCmd(req)
 	}
@@ -73,6 +78,7 @@ func (p *pedometers) AddGroup(req *request) {
 	if req.Group == EMPTYSTRING {
 		req.Error = &InvalidGroupNameError{}
 		req.resp <- req
+		close(req.resp)
 	} else {
 		p.execGroupCmd(req)
 	}
@@ -83,9 +89,11 @@ func (p *pedometers) AddWalkerToGroup(req *request) {
 	if req.Name == EMPTYSTRING {
 		req.Error = &InvalidNameError{}
 		req.resp <- req
+		close(req.resp)
 	} else if req.Group == EMPTYSTRING {
 		req.Error = &InvalidGroupNameError{}
 		req.resp <- req
+		close(req.resp)
 	} else {
 		p.execGroupCmd(req)
 	}
@@ -97,6 +105,7 @@ func (p *pedometers) DeleteWalker(req *request) {
 	req.Cmd = DELETEWALKER
 	req.Error = &NotImplementedError{}
 	req.resp <- req
+	close(req.resp)
 }
 
 func (p *pedometers) ResetSteps(req *request) {
@@ -104,6 +113,7 @@ func (p *pedometers) ResetSteps(req *request) {
 	if req.Name == EMPTYSTRING {
 		req.Error = &InvalidNameError{}
 		req.resp <- req
+		close(req.resp)
 	} else {
 		p.execLeadBoardCmd(req)
 	}
@@ -114,6 +124,7 @@ func (p *pedometers) ListGroup(req *request) {
 	if req.Group == EMPTYSTRING {
 		req.Error = &InvalidGroupNameError{}
 		req.resp <- req
+		close(req.resp)
 	} else {
 		p.execGroupCmd(req)
 	}

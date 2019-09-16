@@ -10,6 +10,7 @@ func (p *pedometers) processAddWalker(req *request) {
 		p.leaderboard[req.Name] = 0
 	}
 	req.resp <- req
+	close(req.resp)
 }
 
 func (p *pedometers) processGetWalker(req *request) {
@@ -20,6 +21,7 @@ func (p *pedometers) processGetWalker(req *request) {
 		req.Steps = steps
 	}
 	req.resp <- req
+	close(req.resp)
 }
 
 func (p *pedometers) processRegisterSteps(req *request) {
@@ -31,6 +33,7 @@ func (p *pedometers) processRegisterSteps(req *request) {
 		req.Steps = p.leaderboard[req.Name]
 	}
 	req.resp <- req
+	close(req.resp)
 }
 
 func (p *pedometers) processAddGroup(req *request) {
@@ -43,6 +46,7 @@ func (p *pedometers) processAddGroup(req *request) {
 		p.groups[req.Group] = make(map[string]bool)
 	}
 	req.resp <- req
+	close(req.resp)
 }
 
 func (p *pedometers) processAddWalkerToGroup(req *request) {
@@ -68,6 +72,7 @@ func (p *pedometers) processAddWalkerToGroup(req *request) {
 		}
 	}
 	req.resp <- req
+	close(req.resp)
 }
 
 //not implemented yet...
@@ -84,6 +89,7 @@ func (p *pedometers) processResetSteps(req *request) {
 		p.leaderboard[req.Name] = 0
 	}
 	req.resp <- req
+	close(req.resp)
 }
 
 func (p *pedometers) processListGroup(req *request) {
@@ -113,6 +119,7 @@ func (p *pedometers) processListGroup(req *request) {
 		}
 	}
 	req.resp <- req
+	close(req.resp)
 }
 
 func (p *pedometers) processListAll(req *request) {
@@ -124,6 +131,7 @@ func (p *pedometers) processListAll(req *request) {
 	}
 	req.Result = result
 	req.resp <- req
+	close(req.resp)
 }
 
 func (p *pedometers) processScan(req *request) {
@@ -142,6 +150,7 @@ func (p *pedometers) processScan(req *request) {
 		}
 	}
 	req.resp <- req
+	close(req.resp)
 }
 
 func (p *pedometers) processListAllGroups(req *request) {
@@ -162,5 +171,6 @@ func (p *pedometers) processListAllGroups(req *request) {
 		}
 	}
 	req.resp <- req
+	close(req.resp)
 
 }
