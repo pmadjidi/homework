@@ -60,7 +60,7 @@ func (p *pedometers) RegisterSteps(req *request) {
 	} else if req.Steps <= 0 {
 		req.Error = &NegativeStepCounterOrZeroError{}
 		req.resp <- req
-	} else if req.Steps >= MAXNUMBEROFSTEPSINPUT {
+	} else if req.Steps >= p.config.MAXNUMBEROFSTEPSINPUT {
 		req.Error = &StepInputOverFlowError{}
 		req.resp <- req
 	} else {

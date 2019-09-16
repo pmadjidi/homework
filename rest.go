@@ -97,7 +97,7 @@ func (a *App) registerSteps(w http.ResponseWriter, req *http.Request) {
 		case *NameDoesNotExistsError:
 			w.WriteHeader(http.StatusNotFound)
 			w.Write([]byte("StatusNotFound 404..."))
-		case  *StepInputOverFlowError:
+		case *StepInputOverFlowError:
 			w.WriteHeader(http.StatusRequestEntityTooLarge)
 			w.Write([]byte("StatusRequestEntityTooLarge 413..."))
 		default:
@@ -183,7 +183,7 @@ func (a *App) newGroup(w http.ResponseWriter, req *http.Request) {
 		case *MaxNumberOFGroupsReachedError:
 			w.WriteHeader(http.StatusRequestEntityTooLarge)
 			w.Write([]byte("StatusRequestEntityTooLarge 413..."))
-			default:
+		default:
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("StatusInternalServerError 500..."))
 		}

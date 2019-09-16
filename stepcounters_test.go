@@ -7,10 +7,16 @@ import (
 	"testing"
 )
 
+func newTestPedometer(quit chan bool) *pedometers {
+	config := readConfig()
+	p := newPedometers("TestPedometers", config)
+	p.startPedometers(quit)
+	return p
+}
+
 func TestAddWalkerFail(t *testing.T) {
 	quit := make(chan bool)
-	p := newPedometers("TestPedometers")
-	p.startPedometers(quit)
+	p := newTestPedometer(quit)
 	defer close(quit)
 
 	req := newRequest()
@@ -20,10 +26,8 @@ func TestAddWalkerFail(t *testing.T) {
 }
 
 func TestAddWalkerSucess(t *testing.T) {
-
 	quit := make(chan bool)
-	p := newPedometers("TestPedometers")
-	p.startPedometers(quit)
+	p := newTestPedometer(quit)
 	defer close(quit)
 
 	req := newRequest()
@@ -40,8 +44,7 @@ func TestAddWalkerSucess(t *testing.T) {
 
 func TestAddWalker(t *testing.T) {
 	quit := make(chan bool)
-	p := newPedometers("TestPedometers")
-	p.startPedometers(quit)
+	p := newTestPedometer(quit)
 	defer close(quit)
 
 	req := newRequest()
@@ -64,8 +67,7 @@ func TestAddWalker(t *testing.T) {
 
 func TestAddWalkerFailExits(t *testing.T) {
 	quit := make(chan bool)
-	p := newPedometers("TestPedometers")
-	p.startPedometers(quit)
+	p := newTestPedometer(quit)
 	defer close(quit)
 	req := newRequest()
 	req.Name = "Payam"
@@ -81,8 +83,7 @@ func TestAddWalkerFailExits(t *testing.T) {
 
 func TestDeleteWalkerMissing(t *testing.T) {
 	quit := make(chan bool)
-	p := newPedometers("TestPedometers")
-	p.startPedometers(quit)
+	p := newTestPedometer(quit)
 	defer close(quit)
 	req := newRequest()
 	req.Name = "Payam"
@@ -99,15 +100,14 @@ func TestDeleteWalkerMissing(t *testing.T) {
 
 func TestConcurrentWalker(t *testing.T) {
 	quit := make(chan bool)
-	p := newPedometers("TestPedometers")
-	p.startPedometers(quit)
+	p := newTestPedometer(quit)
 	defer close(quit)
 	req := newRequest()
 	req.Name = "Payam"
 	p.AddWalker(req)
 	<-req.resp
 	var waitgroup sync.WaitGroup
-	for i := 0; i < MAXITERATIONLIMIT; i++ {
+	for i := 0; i < p.config.MAXITERATIONLIMIT; i++ {
 		waitgroup.Add(1)
 		go func() {
 			req := newRequest()
@@ -126,22 +126,22 @@ func TestConcurrentWalker(t *testing.T) {
 	res.print()
 
 	assert.Equal(t, res.Error, nil, "Expect no Error")
-	assert.Equal(t, res.Steps, MAXITERATIONLIMIT, "All the steps taken should add up")
-	assert.Equal(t, res.Result["Payam"], MAXITERATIONLIMIT, "Payam took all the steps")
+	assert.Equal(t, res.Steps, p.config.MAXITERATIONLIMIT, "All the steps taken should add up")
+	assert.Equal(t, res.Result["Payam"], p.config.MAXITERATIONLIMIT, "Payam took all the steps")
 
 }
 
 func TestConcurrentWalkerWithStepArgument(t *testing.T) {
 	quit := make(chan bool)
-	p := newPedometers("TestPedometers")
-	p.startPedometers(quit)
+	p := newTestPedometer(quit)
 	defer close(quit)
+
 	req := newRequest()
 	req.Name = "Payam"
 	p.AddWalker(req)
 	<-req.resp
 	var waitgroup sync.WaitGroup
-	for i := 0; i < MAXITERATIONLIMIT; i++ {
+	for i := 0; i < p.config.MAXITERATIONLIMIT; i++ {
 		waitgroup.Add(1)
 		go func() {
 			req := newRequest()
@@ -158,20 +158,18 @@ func TestConcurrentWalkerWithStepArgument(t *testing.T) {
 	res := <-req.resp
 
 	assert.Equal(t, res.Error, nil, "Expect no Error")
-	assert.Equal(t, res.Steps, MAXITERATIONLIMIT*5, "All the steps taken should add up")
-	assert.Equal(t, res.Result["Payam"], MAXITERATIONLIMIT*5, "Payam took all the steps")
+	assert.Equal(t, res.Steps, p.config.MAXITERATIONLIMIT*5, "All the steps taken should add up")
+	assert.Equal(t, res.Result["Payam"], p.config.MAXITERATIONLIMIT*5, "Payam took all the steps")
 
 }
 
 func TestConcurrentWalkerWithStepArgukmentOne(t *testing.T) {
-
 	quit := make(chan bool)
-	p := newPedometers("TestPedometers")
-	p.startPedometers(quit)
+	p := newTestPedometer(quit)
 	defer close(quit)
 	req := newRequest()
 	var waitgroup sync.WaitGroup
-	for i := 0; i < MAXITERATIONLIMIT; i++ {
+	for i := 0; i < p.config.MAXITERATIONLIMIT; i++ {
 		waitgroup.Add(1)
 		go func(index int) {
 			req := newRequest()
@@ -193,22 +191,20 @@ func TestConcurrentWalkerWithStepArgukmentOne(t *testing.T) {
 	res := <-req.resp
 
 	assert.Equal(t, res.Error, nil, "Expect no Error")
-	for i := 0; i < MAXITERATIONLIMIT; i++ {
+	for i := 0; i < p.config.MAXITERATIONLIMIT; i++ {
 		assert.Equal(t, res.Result["Payam"+strconv.Itoa(i)], 10, "Each walker takes only 10 steps")
 	}
 
-	assert.Equal(t, res.Steps, MAXITERATIONLIMIT*10, "Each walker takes only 10 steps")
+	assert.Equal(t, res.Steps, p.config.MAXITERATIONLIMIT*10, "Each walker takes only 10 steps")
 
 }
 
 func TestConcurrentWalkerAPIrace(t *testing.T) {
-
 	quit := make(chan bool)
-	p := newPedometers("TestPedometers")
-	p.startPedometers(quit)
+	p := newTestPedometer(quit)
 	defer close(quit)
 	var waitgroup sync.WaitGroup
-	for i := 0; i < MAXITERATIONLIMIT; i++ {
+	for i := 0; i < p.config.MAXITERATIONLIMIT; i++ {
 		waitgroup.Add(1)
 		go func(index int) {
 			req := newRequest()
@@ -248,7 +244,7 @@ func TestConcurrentWalkerAPIrace(t *testing.T) {
 
 	var missed = 0
 
-	for i := 0; i < MAXITERATIONLIMIT; i++ {
+	for i := 0; i < p.config.MAXITERATIONLIMIT; i++ {
 		if res.Result["Payam"+strconv.Itoa(i)] != 20 {
 			missed++
 		}
@@ -259,9 +255,9 @@ func TestConcurrentWalkerAPIrace(t *testing.T) {
 
 func TestAddGrouprFail(t *testing.T) {
 	quit := make(chan bool)
-	p := newPedometers("TestPedometers")
-	p.startPedometers(quit)
+	p := newTestPedometer(quit)
 	defer close(quit)
+
 	req := newRequest()
 	p.AddGroup(req)
 	res := <-req.resp
@@ -270,9 +266,9 @@ func TestAddGrouprFail(t *testing.T) {
 
 func TestAddGrouprSuccess(t *testing.T) {
 	quit := make(chan bool)
-	p := newPedometers("TestPedometers")
-	p.startPedometers(quit)
+	p := newTestPedometer(quit)
 	defer close(quit)
+
 	req := newRequest()
 	req.Group = "Apsis"
 	p.AddGroup(req)
@@ -282,8 +278,7 @@ func TestAddGrouprSuccess(t *testing.T) {
 
 func TestAddGrouprExistFail(t *testing.T) {
 	quit := make(chan bool)
-	p := newPedometers("TestPedometers")
-	p.startPedometers(quit)
+	p := newTestPedometer(quit)
 	defer close(quit)
 
 	req := newRequest()
@@ -302,8 +297,7 @@ func TestAddGrouprExistFail(t *testing.T) {
 func TestAddWalkerToGroupSucess(t *testing.T) {
 
 	quit := make(chan bool)
-	p := newPedometers("TestPedometers")
-	p.startPedometers(quit)
+	p := newTestPedometer(quit)
 	defer close(quit)
 
 	req := newRequest()
@@ -336,8 +330,7 @@ func TestAddWalkerToGroupSucess(t *testing.T) {
 func TestAddWalkerToGroupFail(t *testing.T) {
 
 	quit := make(chan bool)
-	p := newPedometers("TestPedometers")
-	p.startPedometers(quit)
+	p := newTestPedometer(quit)
 	defer close(quit)
 
 	req := newRequest()
@@ -364,8 +357,7 @@ func TestAddWalkerToGroupFail(t *testing.T) {
 func TestAddMultpleWalkersToMultipleGroups(t *testing.T) {
 
 	quit := make(chan bool)
-	p := newPedometers("TestPedometers")
-	p.startPedometers(quit)
+	p := newTestPedometer(quit)
 	defer close(quit)
 
 	var waitgroup sync.WaitGroup
@@ -375,7 +367,7 @@ func TestAddMultpleWalkersToMultipleGroups(t *testing.T) {
 	p.AddGroup(req)
 	_ = <-req.resp
 
-	for i := 0; i < MAXITERATIONLIMIT; i++ {
+	for i := 0; i < p.config.MAXITERATIONLIMIT; i++ {
 		waitgroup.Add(1)
 		go func(index int) {
 			req := newRequest()
@@ -406,11 +398,11 @@ func TestAddMultpleWalkersToMultipleGroups(t *testing.T) {
 	p.ListGroup(req)
 	res := <-req.resp
 
-	assert.Equal(t, res.Steps, MAXITERATIONLIMIT*10, "Testgroup should add up")
+	assert.Equal(t, res.Steps, p.config.MAXITERATIONLIMIT*10, "Testgroup should add up")
 
 	req = newRequest()
 	p.ListAll(req)
 	res = <-req.resp
-	assert.Equal(t, res.Steps, MAXITERATIONLIMIT*10, "List all should add up")
+	assert.Equal(t, res.Steps, p.config.MAXITERATIONLIMIT*10, "List all should add up")
 
 }

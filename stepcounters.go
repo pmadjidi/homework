@@ -16,15 +16,16 @@ func (s source) String() string {
 	}[s]
 }
 
-func newPedometers(name string) *pedometers {
+func newPedometers(name string, config *config) *pedometers {
 	return &pedometers{
 		name,
 		make(leaderboard),
 		make(groups),
-		make(chan *request, MAXQUEUELENGTH),
-		make(chan *request, MAXQUEUELENGTH),
-		make(chan *request, MAXQUEUELENGTH),
-		make(chan *request, MAXQUEUELENGTH),
+		make(chan *request, config.MAXQUEUELENGTH),
+		make(chan *request, config.MAXQUEUELENGTH),
+		make(chan *request, config.MAXQUEUELENGTH),
+		make(chan *request, config.MAXQUEUELENGTH),
+		config,
 	}
 }
 

@@ -4,7 +4,7 @@ func (p *pedometers) processAddWalker(req *request) {
 	_, found := p.leaderboard[req.Name]
 	if found {
 		req.Error = &NameExistsError{}
-	} else if len(p.leaderboard) >= MAXNUMBERSOFWALKERS {
+	} else if len(p.leaderboard) >= p.config.MAXNUMBERSOFWALKERS {
 		req.Error = &MaxNumberOFWalkersReachedError{}
 	} else {
 		p.leaderboard[req.Name] = 0
@@ -37,7 +37,7 @@ func (p *pedometers) processAddGroup(req *request) {
 	_, found := p.groups[req.Group]
 	if found {
 		req.Error = &GroupExistsError{}
-	} else if len(p.groups) >= MAXNUMBEROFGROUPS {
+	} else if len(p.groups) >= p.config.MAXNUMBEROFGROUPS {
 		req.Error = &MaxNumberOFGroupsReachedError{}
 	} else {
 		p.groups[req.Group] = make(map[string]bool)
@@ -52,7 +52,7 @@ func (p *pedometers) processAddWalkerToGroup(req *request) {
 		req.Error = &GroupDoesNotExistsError{}
 	} else if _, userfound := p.groups[req.Group][req.Name]; userfound {
 		req.Error = &NameExistsError{}
-	} else if len(aUserGroup) >= MAXNUMBEROFWALKERSINGROUP {
+	} else if len(aUserGroup) >= p.config.MAXNUMBEROFWALKERSINGROUP {
 		req.Error = &MaxNumberOFWalkersInGroupsReachedError{}
 	} else {
 

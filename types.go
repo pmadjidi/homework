@@ -5,7 +5,6 @@ import "github.com/gorilla/mux"
 type leaderboard map[string]int
 type groups map[string]map[string]bool
 
-
 type pedometers struct {
 	name string
 	leaderboard
@@ -14,12 +13,24 @@ type pedometers struct {
 	leaderBoardCmdInternal chan *request // internal loop
 	groupsCmd              chan *request
 	groupsCmdInternal      chan *request // internal loop
+	config                 *config
+}
+
+type config struct {
+	MAXQUEUELENGTH    int
+	MAXITERATIONLIMIT int // concurrent request to API server
+	// always good to put a bound on datastructures...
+	MAXNUMBEROFSTEPSINPUT     int
+	MAXNUMBERSOFWALKERS       int
+	MAXNUMBEROFGROUPS         int
+	MAXNUMBEROFWALKERSINGROUP int
 }
 
 type App struct {
 	*pedometers
 	quit chan bool
 	*mux.Router
+	*config
 }
 
 type command int

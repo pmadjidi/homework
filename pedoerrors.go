@@ -101,3 +101,10 @@ type MaxNumberOFWalkersInGroupsReachedError struct {
 func (e *MaxNumberOFWalkersInGroupsReachedError) Error() string {
 	return fmt.Sprintf("MAX_NUMBER_OF_WALKERS_IN_GROUP_REACHED")
 }
+
+type EnvVariableMissingOrNotIntError struct {
+}
+
+func (e *EnvVariableMissingOrNotIntError) Error() string {
+	return fmt.Sprintf("ENV-VARIABLE-MISSING-OR-NOT-INT")
+}
