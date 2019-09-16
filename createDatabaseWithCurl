@@ -1,0 +1,9 @@
+curl http://payam.ite.kth.se:8080/add/group/kth
+curl http://payam.ite.kth.se:8080/add/group/apsis
+curl http://payam.ite.kth.se:8080/add/step/payam
+curl http://payam.ite.kth.se:8080/add/step/mikael
+curl http://payam.ite.kth.se:8080/extend/kth/payam
+curl http://payam.ite.kth.se:8080/extend/apsis/mikael
+curl http://payam.ite.kth.se:8080/inc/payam/10
+curl http://payam.ite.kth.se:8080/inc/mikael/100
+curl http://payam.ite.kth.se:8080/get/allgroups
