@@ -101,7 +101,7 @@ func TestRestAPI(t *testing.T) {
 		defer resp5.Body.Close()
 	}
 
-	
+
 
 	if err != nil {
 		t.Fail()

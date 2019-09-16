@@ -108,6 +108,7 @@ func (p *pedometers) execLeadBoardCmd(req *request) {
 		case <-time.After(waitDuration * time.Second):
 			req.Error = &TimeOutError{}
 			req.resp <- req
+			close(req.resp)
 		}
 	} else {
 		select {
@@ -115,6 +116,7 @@ func (p *pedometers) execLeadBoardCmd(req *request) {
 		case <-time.After(waitDuration  * time.Second):
 			req.Error = &TimeOutError{}
 			req.resp <- req
+			close(req.resp)
 		}
 	}
 }
@@ -127,6 +129,7 @@ func (p *pedometers) execGroupCmd(req *request) {
 		case <-time.After(waitDuration * time.Second):
 			req.Error = &TimeOutError{}
 			req.resp <- req
+			close(req.resp)
 		}
 	} else {
 		select {
@@ -134,6 +137,7 @@ func (p *pedometers) execGroupCmd(req *request) {
 		case <-time.After(waitDuration  * time.Second):
 			req.Error = &TimeOutError{}
 			req.resp <- req
+			close(req.resp)
 		}
 	}
 }
