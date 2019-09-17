@@ -44,7 +44,6 @@ func (p *pedometers) startPedometers(quit chan bool) {
 			case <-quit:
 				println("Stoping leaderboard processor")
 				return
-			default:
 			}
 		}
 	}()
@@ -62,7 +61,6 @@ func (p *pedometers) startPedometers(quit chan bool) {
 			case <-quit:
 				println("Stoping group processor")
 				return
-			default:
 			}
 		}
 	}()
