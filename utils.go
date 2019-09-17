@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/sha1"
 	"encoding/json"
 	"fmt"
 	"math/rand"
@@ -22,4 +23,10 @@ func PrettyPrint(v interface{}) (err error) {
 		fmt.Println(string(b))
 	}
 	return
+}
+
+func calcHash(name string) string {
+	hasher := sha1.New()
+	hasher.Write([]byte(name))
+	return  fmt.Sprintf("%x", hasher.Sum(nil))
 }

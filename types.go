@@ -29,10 +29,13 @@ type config struct {
 	TIMEOUT int
 }
 
+type shards map[string]*pedometers
+
 type App struct {
-	*pedometers
+	shards
 	quit chan bool
 	*mux.Router
+	Cmd      chan *request
 	*config
 }
 
@@ -50,3 +53,16 @@ type outputGroup struct {
 }
 
 type source int
+
+type request struct {
+	Cmd     command `json:"cmd"`
+	Source  source  `json:"source"`
+	Name    string  `json:"name"`
+	Group   string  `json:"group"`
+	Steps   int     `json:"steps"`
+	Error   error   `json:"error"`
+	Hash    string  `json:"hash"`
+	Result  leaderboard
+	Results map[string]leaderboard
+	resp    chan *request
+}

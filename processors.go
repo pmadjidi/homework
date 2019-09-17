@@ -1,6 +1,7 @@
 package main
 
 func (p *pedometers) processAddWalker(req *request) {
+
 	_, found := p.leaderboard[req.Name]
 	if found {
 		req.Error = &NameExistsError{}

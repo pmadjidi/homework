@@ -1,9 +1,5 @@
 package main
 
-import (
-	"time"
-)
-
 const (
 	INTERNAL source = iota
 	EXTERNAL
@@ -69,6 +65,8 @@ func (p *pedometers) startPedometers(quit chan bool) {
 
 }
 
+
+
 func (p *pedometers) dispatchCommand(req *request) {
 	switch req.Cmd {
 	case ADDWALKER:
@@ -100,44 +98,3 @@ func (p *pedometers) dispatchCommand(req *request) {
 	}
 }
 
-func (p *pedometers) execLeadBoardCmd(req *request) {
-	waitDuration := time.Duration(p.config.TIMEOUT)
-	if (req.Source == EXTERNAL) {
-		select {
-		case p.leaderBoardCmd <- req:
-		case <-time.After(waitDuration * time.Second):
-			req.Error = &TimeOutError{}
-			req.resp <- req
-			close(req.resp)
-		}
-	} else {
-		select {
-		case p.leaderBoardCmdInternal <- req:
-		case <-time.After(waitDuration  * time.Second):
-			req.Error = &TimeOutError{}
-			req.resp <- req
-			close(req.resp)
-		}
-	}
-}
-
-func (p *pedometers) execGroupCmd(req *request) {
-	waitDuration := time.Duration(p.config.TIMEOUT)
-	if (req.Source == EXTERNAL) {
-		select {
-		case p.groupsCmd <- req:
-		case <-time.After(waitDuration * time.Second):
-			req.Error = &TimeOutError{}
-			req.resp <- req
-			close(req.resp)
-		}
-	} else {
-		select {
-		case p.groupsCmdInternal <- req:
-		case <-time.After(waitDuration  * time.Second):
-			req.Error = &TimeOutError{}
-			req.resp <- req
-			close(req.resp)
-		}
-	}
-}

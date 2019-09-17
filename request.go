@@ -3,17 +3,7 @@ package main
 import "encoding/json"
 import "fmt"
 
-type request struct {
-	Cmd     command `json:"cmd"`
-	Source  source  `json:"source"`
-	Name    string  `json:"name"`
-	Group   string  `json:"group"`
-	Steps   int     `json:"steps"`
-	Error   error   `json:"error"`
-	Result  leaderboard
-	Results map[string]leaderboard
-	resp    chan *request
-}
+
 
 func newRequest() *request {
 	return &request{

@@ -1,5 +1,8 @@
 package main
 
+import "crypto/sha1"
+import "fmt"
+
 const (
 	NOP command = iota
 	ADDWALKER
@@ -32,29 +35,45 @@ func (c command) String() string {
 	}[c]
 }
 
-func (p *pedometers) AddWalker(req *request) {
+func (a *App) steperHash(req *request) {
+	req.Hash = calcHash(req.Name)
+}
+
+func (a *App) groupHash(req *request) {
+	req.Hash = calcHash(req.Group)
+}
+
+func (a *App) chardName(req *request) string {
+	return req.Hash[0:SHARTSLICE]
+}
+
+
+
+
+
+func (a *App) AddWalker(req *request) {
 	req.Cmd = ADDWALKER
 	if req.Name == EMPTYSTRING {
 		req.Error = &InvalidNameError{}
 		req.resp <- req
 		close(req.resp)
 	} else {
-		p.execLeadBoardCmd(req)
+		a.execLeadBoardCmd(req)
 	}
 }
 
-func (p *pedometers) GetWalker(req *request) {
+func (a *App) GetWalker(req *request) {
 	req.Cmd = GETWALKER
 	if req.Name == EMPTYSTRING {
 		req.Error = &InvalidNameError{}
 		req.resp <- req
 		close(req.resp)
 	} else {
-		p.execLeadBoardCmd(req)
+		a.execLeadBoardCmd(req)
 	}
 }
 
-func (p *pedometers) RegisterSteps(req *request) {
+func (a *App) RegisterSteps(req *request) {
 	req.Cmd = REGISTERSTEPS
 	if req.Name == EMPTYSTRING {
 		req.Error = &InvalidNameError{}
@@ -64,27 +83,27 @@ func (p *pedometers) RegisterSteps(req *request) {
 		req.Error = &NegativeStepCounterOrZeroError{}
 		req.resp <- req
 		close(req.resp)
-	} else if req.Steps >= p.config.MAXNUMBEROFSTEPSINPUT {
+	} else if req.Steps >= a.config.MAXNUMBEROFSTEPSINPUT {
 		req.Error = &StepInputOverFlowError{}
 		req.resp <- req
 		close(req.resp)
 	} else {
-		p.execLeadBoardCmd(req)
+		a.execLeadBoardCmd(req)
 	}
 }
 
-func (p *pedometers) AddGroup(req *request) {
+func (a *App) AddGroup(req *request) {
 	req.Cmd = ADDGROUP
 	if req.Group == EMPTYSTRING {
 		req.Error = &InvalidGroupNameError{}
 		req.resp <- req
 		close(req.resp)
 	} else {
-		p.execGroupCmd(req)
+		a.execGroupCmd(req)
 	}
 }
 
-func (p *pedometers) AddWalkerToGroup(req *request) {
+func (a *App) AddWalkerToGroup(req *request) {
 	req.Cmd = ADDWALKERTOGROUP
 	if req.Name == EMPTYSTRING {
 		req.Error = &InvalidNameError{}
@@ -95,47 +114,47 @@ func (p *pedometers) AddWalkerToGroup(req *request) {
 		req.resp <- req
 		close(req.resp)
 	} else {
-		p.execGroupCmd(req)
+		a.execGroupCmd(req)
 	}
 
 }
 
 //not implemented yet
-func (p *pedometers) DeleteWalker(req *request) {
+func (a *App) DeleteWalker(req *request) {
 	req.Cmd = DELETEWALKER
 	req.Error = &NotImplementedError{}
 	req.resp <- req
 	close(req.resp)
 }
 
-func (p *pedometers) ResetSteps(req *request) {
+func (a *App) ResetSteps(req *request) {
 	req.Cmd = RESETSTEPS
 	if req.Name == EMPTYSTRING {
 		req.Error = &InvalidNameError{}
 		req.resp <- req
 		close(req.resp)
 	} else {
-		p.execLeadBoardCmd(req)
+		a.execLeadBoardCmd(req)
 	}
 }
 
-func (p *pedometers) ListGroup(req *request) {
+func (a *App) ListGroup(req *request) {
 	req.Cmd = LISTGROUP
 	if req.Group == EMPTYSTRING {
 		req.Error = &InvalidGroupNameError{}
 		req.resp <- req
 		close(req.resp)
 	} else {
-		p.execGroupCmd(req)
+		a.execGroupCmd(req)
 	}
 }
 
-func (p *pedometers) ListAll(req *request) {
+func (a *App) ListAll(req *request) {
 	req.Cmd = LISTALL
-	p.execLeadBoardCmd(req)
+	a.execLeadBoardCmd(req)
 }
 
-func (p *pedometers) scan(req *request) {
+func (a *App) scan(req *request) {
 	req.Cmd = SCAN
-	p.execLeadBoardCmd(req)
+	a.execLeadBoardCmd(req)
 }
