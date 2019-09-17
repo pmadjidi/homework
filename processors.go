@@ -96,6 +96,7 @@ func (p *pedometers) processResetSteps(req *request) {
 }
 
 func (p *pedometers) processListGroup(req *request) {
+
 	aGroup, found := p.groups[req.Group]
 	if !found {
 		req.Error = &GroupDoesNotExistsError{}
@@ -109,7 +110,7 @@ func (p *pedometers) processListGroup(req *request) {
 			wg.Add(1)
 			go func(name string) {
 				newreq := newRequestInternal()
-				newreq.Name = k
+				newreq.Name = name
 				APP.GetWalker(newreq)
 				responseFromOthers <- newreq.resp
 				wg.Done()

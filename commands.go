@@ -36,10 +36,12 @@ func (c command) String() string {
 
 func (a *App) steperHash(req *request)  {
 	req.Hash = calcHash(req.Name)
+	println("NAME:",req.Name,req.Hash)
 }
 
 func (a *App) groupHash(req *request)  {
 	req.Hash = calcHash(req.Group)
+	println("GROUP",req.Group,req.Hash)
 }
 
 func (a *App) chardName(req *request) string {
