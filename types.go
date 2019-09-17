@@ -8,7 +8,7 @@ type leaderboard map[string]int
 type groups map[string]map[string]bool
 
 type pedometers struct {
-	name string
+	index int
 	leaderboard
 	groups
 	leaderBoardCmd         chan *request

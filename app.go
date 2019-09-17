@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"github.com/gorilla/mux"
-	"strconv"
 	"time"
 )
 
@@ -19,18 +18,17 @@ func newApp(name string) *App {
 }
 
 func (a *App) startShardHandler(quit chan bool) {
-	for i := 0 ; i < a.config.NUMBEROFSHARDS; i++ {
-		a.shards[i] = newPedometers(strconv.Itoa(i), a.config)
+	for i := 0; i < a.config.NUMBEROFSHARDS; i++ {
+		a.shards[i] = newPedometers(i, a.config)
 		a.shards[i].startPedometers(quit)
 	}
 }
-
 
 func (a *App) execLeadBoardCmd(req *request) {
 	waitDuration := time.Duration(a.config.TIMEOUT)
 	a.steperHash(req)
 	index := hextoint(req.Hash[0:SHARTSLICE])
-	println("hextoint",index)
+
 
 	if (req.Source == EXTERNAL) {
 		select {
@@ -41,12 +39,22 @@ func (a *App) execLeadBoardCmd(req *request) {
 			close(req.resp)
 		}
 	} else {
-		select {
-		case a.shards[index].leaderBoardCmdInternal <- req:
-		case <-time.After(waitDuration  * time.Second):
-			req.Error = &TimeOutError{}
-			req.resp <- req
-			close(req.resp)
+		if req.shard == nil {
+			select {
+			case a.shards[index].leaderBoardCmdInternal <- req:
+			case <-time.After(waitDuration * time.Second):
+				req.Error = &TimeOutError{}
+				req.resp <- req
+				close(req.resp)
+			}
+		} else {
+			select {
+			case req.shard.leaderBoardCmdInternal <- req:
+			case <-time.After(waitDuration * time.Second):
+				req.Error = &TimeOutError{}
+				req.resp <- req
+				close(req.resp)
+			}
 		}
 	}
 }
@@ -64,18 +72,25 @@ func (a *App) execGroupCmd(req *request) {
 			close(req.resp)
 		}
 	} else {
-		select {
-		case a.shards[index].groupsCmdInternal <- req:
-		case <-time.After(waitDuration  * time.Second):
-			req.Error = &TimeOutError{}
-			req.resp <- req
-			close(req.resp)
+		if req.shard == nil {
+			select {
+			case a.shards[index].groupsCmdInternal <- req:
+			case <-time.After(waitDuration * time.Second):
+				req.Error = &TimeOutError{}
+				req.resp <- req
+				close(req.resp)
+			}
+		} else {
+			select {
+			case req.shard.groupsCmdInternal <- req:
+			case <-time.After(waitDuration * time.Second):
+				req.Error = &TimeOutError{}
+				req.resp <- req
+				close(req.resp)
+			}
 		}
 	}
 }
-
-
-
 
 func (a *App) start() {
 	println("Starting with configuration:")

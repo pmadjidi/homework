@@ -1,5 +1,7 @@
 package main
 
+import "strconv"
+
 const (
 	INTERNAL source = iota
 	EXTERNAL
@@ -12,7 +14,7 @@ func (s source) String() string {
 	}[s]
 }
 
-func newPedometers(name string, config *config) *pedometers {
+func newPedometers(name int, config *config) *pedometers {
 	return &pedometers{
 		name,
 		make(leaderboard),
@@ -26,36 +28,37 @@ func newPedometers(name string, config *config) *pedometers {
 }
 
 func (p *pedometers) startPedometers(quit chan bool) {
-	println("Starting processors",p.name)
+	name := strconv.Itoa(p.index)
+	println("Starting processors",name)
 	go func() {
-		println("Starting leaderboard processor",p.name)
+		println("Starting leaderboard processor",name)
 		for {
 			select {
 			case req := <-p.leaderBoardCmdInternal:
-				println("Processing leaderboard Internal queue",p.name, req.Cmd.String())
+				println("Processing leaderboard Internal queue",name, req.Cmd.String())
 				p.dispatchCommand(req)
 			case req := <-p.leaderBoardCmd:
-				println("Processing leaderboard queue", p.name,req.Cmd.String())
+				println("Processing leaderboard queue", name,req.Cmd.String())
 				p.dispatchCommand(req)
 			case <-quit:
-				println("Stoping leaderboard processor",p.name)
+				println("Stoping leaderboard processor",name)
 				return
 			}
 		}
 	}()
 
 	go func() {
-		println("Starting group processors",p.name)
+		println("Starting group processors",name)
 		for {
 			select {
 			case req := <-p.groupsCmdInternal:
-				println("Processing groups internal queue",p.name, req.Cmd.String())
+				println("Processing groups internal queue",name, req.Cmd.String())
 				p.dispatchCommand(req)
 			case req := <-p.groupsCmd:
-				println("Processing groups  queue",p.name, req.Cmd.String())
+				println("Processing groups  queue",name, req.Cmd.String())
 				p.dispatchCommand(req)
 			case <-quit:
-				println("Stoping group processor",p.name)
+				println("Stoping group processor",name)
 				return
 			}
 		}
@@ -83,13 +86,12 @@ func (p *pedometers) dispatchCommand(req *request) {
 		p.processResetSteps(req)
 	case LISTGROUP:
 		p.processListGroup(req)
+	case LIST:
+		p.processList(req)
 	case LISTALL:
 		p.processListAll(req)
 	case LISTALLGROUPS:
 		p.processListAllGroups(req)
-	case SCAN:
-		p.processScan(req)
-
 	default:
 		req.Error = &UnknownCmdError{}
 		req.resp <- req
