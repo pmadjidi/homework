@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/rand"
+	"strconv"
 )
 
 func RandomString(n int) string {
@@ -30,3 +31,22 @@ func calcHash(name string) string {
 	hasher.Write([]byte(name))
 	return  fmt.Sprintf("%x", hasher.Sum(nil))
 }
+
+func hextoint(hexnumber string) int {
+	d, _ := strconv.ParseInt("0x" + hexnumber , 0, 64)
+	return int(d)
+}
+
+func upper_power_of_two(v int) int {
+	v--;
+	v |= v >> 1;
+	v |= v >> 2;
+	v |= v >> 4;
+	v |= v >> 8;
+	v |= v >> 16;
+	v++;
+	return v;
+
+}
+
+

@@ -26,19 +26,19 @@ func newPedometers(name string, config *config) *pedometers {
 }
 
 func (p *pedometers) startPedometers(quit chan bool) {
-	println("Starting processors")
+	println("Starting processors",p.name)
 	go func() {
-		println("Starting leaderboard processor")
+		println("Starting leaderboard processor",p.name)
 		for {
 			select {
 			case req := <-p.leaderBoardCmdInternal:
-				println("Processing leaderboard Internal queue", req.Cmd.String())
+				println("Processing leaderboard Internal queue",p.name, req.Cmd.String())
 				p.dispatchCommand(req)
 			case req := <-p.leaderBoardCmd:
-				println("Processing leaderboard queue", req.Cmd.String())
+				println("Processing leaderboard queue", p.name,req.Cmd.String())
 				p.dispatchCommand(req)
 			case <-quit:
-				println("Stoping leaderboard processor")
+				println("Stoping leaderboard processor",p.name)
 				return
 			default:
 			}
@@ -46,17 +46,17 @@ func (p *pedometers) startPedometers(quit chan bool) {
 	}()
 
 	go func() {
-		println("Starting group processors")
+		println("Starting group processors",p.name)
 		for {
 			select {
 			case req := <-p.groupsCmdInternal:
-				println("Processing groups internal queue", req.Cmd.String())
+				println("Processing groups internal queue",p.name, req.Cmd.String())
 				p.dispatchCommand(req)
 			case req := <-p.groupsCmd:
-				println("Processing groups  queue", req.Cmd.String())
+				println("Processing groups  queue",p.name, req.Cmd.String())
 				p.dispatchCommand(req)
 			case <-quit:
-				println("Stoping group processor")
+				println("Stoping group processor",p.name)
 				return
 			default:
 			}

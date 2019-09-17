@@ -5,6 +5,9 @@ import "fmt"
 
 
 
+
+
+
 func newRequest() *request {
 	return &request{
 		NOP,
@@ -13,9 +16,11 @@ func newRequest() *request {
 		"",
 		0,
 		nil,
+		"",
 		nil,
 		nil,
 		make(chan *request, 1),
+		nil,
 	}
 }
 
@@ -27,9 +32,11 @@ func newRequestInternal() *request {
 		"",
 		0,
 		nil,
+		"",
 		nil,
 		nil,
 		make(chan *request, 1),
+		nil,
 	}
 }
 

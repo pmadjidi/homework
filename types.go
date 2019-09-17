@@ -27,9 +27,10 @@ type config struct {
 	MAXNUMBEROFGROUPS         int
 	MAXNUMBEROFWALKERSINGROUP int
 	TIMEOUT int
+	NUMBEROFSHARDS int
 }
 
-type shards map[string]*pedometers
+type shards map[int]*pedometers
 
 type App struct {
 	shards
@@ -65,4 +66,5 @@ type request struct {
 	Result  leaderboard
 	Results map[string]leaderboard
 	resp    chan *request
+	shard  *pedometers
 }

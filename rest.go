@@ -263,7 +263,7 @@ func (a *App) getGroup(w http.ResponseWriter, req *http.Request) {
 func (a *App) getAll(w http.ResponseWriter, req *http.Request) {
 
 	r := newRequest()
-	a.processListAllGroups(r)
+	a.ListAllGroups(r)
 	resp := <-r.resp
 
 	if resp.Error != nil {

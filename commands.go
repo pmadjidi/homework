@@ -1,7 +1,6 @@
 package main
 
-import "crypto/sha1"
-import "fmt"
+
 
 const (
 	NOP command = iota
@@ -35,11 +34,11 @@ func (c command) String() string {
 	}[c]
 }
 
-func (a *App) steperHash(req *request) {
+func (a *App) steperHash(req *request)  {
 	req.Hash = calcHash(req.Name)
 }
 
-func (a *App) groupHash(req *request) {
+func (a *App) groupHash(req *request)  {
 	req.Hash = calcHash(req.Group)
 }
 
@@ -151,6 +150,11 @@ func (a *App) ListGroup(req *request) {
 
 func (a *App) ListAll(req *request) {
 	req.Cmd = LISTALL
+	a.execLeadBoardCmd(req)
+}
+
+func (a *App) ListAllGroups(req *request) {
+	req.Cmd = LISTALLGROUPS
 	a.execLeadBoardCmd(req)
 }
 
