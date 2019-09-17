@@ -235,7 +235,7 @@ func (a *App) getGroup(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 	r := newRequest()
 	r.Group = params["name"]
-	a.ListGroup(r)
+	a.GetGroup(r)
 	resp := <-r.resp
 
 	if resp.Error != nil {

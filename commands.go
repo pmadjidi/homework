@@ -11,7 +11,7 @@ const (
 	ADDWALKERTOGROUP
 	DELETEWALKER
 	RESETSTEPS
-	LISTGROUP
+	GETGROUP
 	LIST
 	LISTALL
 	LISTALLGROUPS
@@ -27,7 +27,7 @@ func (c command) String() string {
 		"ADDWALKERTOGROUP",
 		"DELETEWALKER",
 		"RESETSTEPS",
-		"LISTGROUP",
+		"GETGROUP",
 		"LIST",
 		"LISTALL",
 		"LISTALLGROUPS",
@@ -139,8 +139,8 @@ func (a *App) ResetSteps(req *request) {
 	}
 }
 
-func (a *App) ListGroup(req *request) {
-	req.Cmd = LISTGROUP
+func (a *App) GetGroup(req *request) {
+	req.Cmd = GETGROUP
 	if req.Group == EMPTYSTRING {
 		req.Error = &InvalidGroupNameError{}
 		req.resp <- req

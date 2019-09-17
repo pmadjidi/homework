@@ -95,7 +95,7 @@ func (p *pedometers) processResetSteps(req *request) {
 	close(req.resp)
 }
 
-func (p *pedometers) processListGroup(req *request) {
+func (p *pedometers) processGetGroup(req *request) {
 
 	aGroup, found := p.groups[req.Group]
 	if !found {
@@ -205,7 +205,7 @@ func (p *pedometers) processListAllGroups1(req *request) {
 	for k, _ := range p.groups {
 		newRequest := newRequestInternal()
 		newRequest.Group = k
-		APP.ListGroup(newRequest)
+		APP.GetGroup(newRequest)
 		ans := <-newRequest.resp
 		if ans.Error != nil {
 			req.Error = newRequest.Error

@@ -84,8 +84,8 @@ func (p *pedometers) dispatchCommand(req *request) {
 		p.processGetWalker(req)
 	case RESETSTEPS:
 		p.processResetSteps(req)
-	case LISTGROUP:
-		p.processListGroup(req)
+	case GETGROUP:
+		p.processGetGroup(req)
 	case LIST:
 		p.processList(req)
 	case LISTALL:
