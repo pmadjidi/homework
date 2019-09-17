@@ -213,6 +213,10 @@ func TestConcurrentWalkerAPIrace(t *testing.T) {
 			_ = <-req.resp
 			waitgroup.Done()
 		}(i)
+	}
+
+	waitgroup.Wait()
+	for i := 0; i < p.config.MAXITERATIONLIMIT; i++ {
 		waitgroup.Add(1)
 		go func(index int) {
 			req := newRequest()
@@ -250,7 +254,10 @@ func TestConcurrentWalkerAPIrace(t *testing.T) {
 		}
 	}
 
-	assert.GreaterOrEqual(t, missed, 0, "Can not increment stepcounter before creation")
+	println("***********************************************", missed)
+
+	assert.Equal(t, missed, 0, "Can not increment stepcounter before creation")
+	
 }
 
 func TestAddGrouprFail(t *testing.T) {
