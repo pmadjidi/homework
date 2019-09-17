@@ -1,5 +1,7 @@
 package main
 
+import "sync"
+
 func (p *pedometers) processAddWalker(req *request) {
 
 	_, found := p.leaderboard[req.Name]
@@ -93,34 +95,50 @@ func (p *pedometers) processResetSteps(req *request) {
 	close(req.resp)
 }
 
+
+
 func (p *pedometers) processListGroup(req *request) {
 	aGroup, found := p.groups[req.Group]
 	if !found {
 		req.Error = &GroupDoesNotExistsError{}
 	} else {
-		newReq := newRequestInternal()
-		newReq.Group = req.Group
-		newReq.Result = make(leaderboard)
+
+		req.Result = make(leaderboard)
+		var wg sync.WaitGroup
+		var responseFromOthers = make(chan chan *request, len(aGroup))
 		for k, _ := range aGroup {
-			newReq.Result[k] = 0
+			req.Result[k] = 0
+			wg.Add(1)
+			go func(name string) {
+				req := newRequestInternal()
+				req.Name = k
+				APP.GetWalker(req)
+				responseFromOthers <- req.resp
+				wg.Done()
+			}(k)
 		}
-		APP.scan(newReq)
-		newResp := <-newReq.resp
-		if newResp.Error != nil {
-			req.Error = newResp.Error
-		} else {
-			req.Result = newReq.Result
-			for k, v := range req.Result {
-				if v == NOTFOUND { // prepare for implementation of delte function
-					delete(req.Result, k)
-				} else {
-					req.Steps += v
-				}
+
+		go func() {
+			wg.Wait()
+			close(responseFromOthers)
+		}()
+
+		for resp := range responseFromOthers {
+			r := <-resp
+			if r.Error == nil {
+				req.Result[r.Name] = r.Steps
+				req.Steps += r.Steps
+			} else {
+				req.Error = r.Error
+				req.resp <- req
+				close(req.resp)
+				return
 			}
 		}
+
+		req.resp <- req
+		close(req.resp)
 	}
-	req.resp <- req
-	close(req.resp)
 }
 
 func (p *pedometers) processListAll(req *request) {

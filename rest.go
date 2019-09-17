@@ -215,7 +215,7 @@ func (a *App) extendGroup(w http.ResponseWriter, req *http.Request) {
 		case *NameExistsError:
 			w.WriteHeader(http.StatusConflict)
 			w.Write([]byte("StatusConflict 409..."))
-		case *GroupDoesNotExistsError:
+		case *GroupDoesNotExistsError,*NameDoesNotExistsError:
 			w.WriteHeader(http.StatusNotFound)
 			w.Write([]byte("StatusNotFound 404..."))
 		case *MaxNumberOFWalkersInGroupsReachedError:
