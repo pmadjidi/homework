@@ -152,13 +152,14 @@ func (a *App) GetGroup(req *request) {
 	}
 }
 
-func (a *App) List(req *request) {
+func (a *App) ListWalkers(req *request) {
 	req.Cmd = LISTWALKERS
 	a.execLeadBoardCmd(req)
 }
 
 func (a *App) ListAll(req *request) {
 	req.Cmd = LISTALLWALKERS
+	req.Name = RandomString(10)
 	a.execLeadBoardCmd(req)
 }
 
@@ -171,6 +172,7 @@ func (a *App) ListGroups(req *request) {
 
 func (a *App) ListAllGroups(req *request) {
 	req.Cmd = LISTALLGROUPS
+	req.Group = RandomString(10)
 	a.execGroupCmd(req)
 }
 

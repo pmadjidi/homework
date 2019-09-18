@@ -2,16 +2,26 @@ package main
 
 import (
 	"github.com/stretchr/testify/assert"
+	"runtime"
 	"strconv"
 	"sync"
 	"testing"
 )
 
-func newTestPedometer(quit chan bool) *pedometers {
-	config := readConfig()
-	p := newPedometers("TestPedometers", config)
-	p.startPedometers(quit)
-	return p
+func newTestPedometer(quit chan bool) *App {
+
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	APP = newApp("Apsis Homework")
+
+	go func() {
+		APP = newApp("Apsis Homework")
+		APP.start()
+		<-quit
+		APP.shutdown()
+	}()
+
+	return APP
+
 }
 
 func TestAddWalkerFail(t *testing.T) {
@@ -27,17 +37,17 @@ func TestAddWalkerFail(t *testing.T) {
 
 func TestAddWalkerSucess(t *testing.T) {
 	quit := make(chan bool)
-	p := newTestPedometer(quit)
+	a := newTestPedometer(quit)
 	defer close(quit)
 
 	req := newRequest()
 	req.Name = "Payam"
-	p.AddWalker(req)
+	a.AddWalker(req)
 	res := <-req.resp
 	assert.Equal(t, res.Error, nil, "No Error")
 
 	req = newRequest()
-	p.ListAll(req)
+	a.ListAll(req)
 	res = <-req.resp
 	assert.Equal(t, res.Result["Payam"], 0, "Counter set to zer0")
 }
@@ -402,7 +412,7 @@ func TestAddMultpleWalkersToMultipleGroups(t *testing.T) {
 
 	req = newRequest()
 	req.Group = "TestGroup"
-	p.ListGroup(req)
+	p.ListGroups(req)
 	res := <-req.resp
 
 	assert.Equal(t, res.Steps, p.config.MAXITERATIONLIMIT*10, "Testgroup should add up")
