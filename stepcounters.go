@@ -86,12 +86,14 @@ func (p *pedometers) dispatchCommand(req *request) {
 		p.processResetSteps(req)
 	case GETGROUP:
 		p.processGetGroup(req)
-	case LIST:
-		p.processList(req)
-	case LISTALL:
-		p.processListAll(req)
+	case LISTWALKERS:
+		p.processListWalkers(req)
+	case LISTALLWALKERS:
+		p.processListAllWalkers(req)
 	case LISTALLGROUPS:
 		p.processListAllGroups(req)
+	case LISTGROUPS:
+		p.processListGroups(req)
 	default:
 		req.Error = &UnknownCmdError{}
 		req.resp <- req

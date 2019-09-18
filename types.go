@@ -5,7 +5,7 @@ import (
 )
 
 type leaderboard map[string]int
-type groups map[string]map[string]bool
+type groups map[string]map[string]int
 
 type pedometers struct {
 	index int

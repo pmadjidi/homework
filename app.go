@@ -81,6 +81,7 @@ func (a *App) execGroupCmd(req *request) {
 				close(req.resp)
 			}
 		} else {
+			println("execGroupCmd, bypass shard...")
 			select {
 			case req.shard.groupsCmdInternal <- req:
 			case <-time.After(waitDuration * time.Second):

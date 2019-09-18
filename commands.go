@@ -12,8 +12,9 @@ const (
 	DELETEWALKER
 	RESETSTEPS
 	GETGROUP
-	LIST
-	LISTALL
+	LISTWALKERS
+	LISTALLWALKERS
+	LISTGROUPS
 	LISTALLGROUPS
 )
 
@@ -28,8 +29,9 @@ func (c command) String() string {
 		"DELETEWALKER",
 		"RESETSTEPS",
 		"GETGROUP",
-		"LIST",
-		"LISTALL",
+		"LISTWALKERS",
+		"LISTALLWALKERS",
+		"LISTGROUPS",
 		"LISTALLGROUPS",
 	}[c]
 }
@@ -151,18 +153,24 @@ func (a *App) GetGroup(req *request) {
 }
 
 func (a *App) List(req *request) {
-	req.Cmd = LIST
+	req.Cmd = LISTWALKERS
 	a.execLeadBoardCmd(req)
 }
 
 func (a *App) ListAll(req *request) {
-	req.Cmd = LISTALL
+	req.Cmd = LISTALLWALKERS
 	a.execLeadBoardCmd(req)
+}
+
+
+func (a *App) ListGroups(req *request) {
+	req.Cmd = LISTGROUPS
+	a.execGroupCmd(req)
 }
 
 
 func (a *App) ListAllGroups(req *request) {
 	req.Cmd = LISTALLGROUPS
-	a.execLeadBoardCmd(req)
+	a.execGroupCmd(req)
 }
 
