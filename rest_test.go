@@ -2,25 +2,46 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"github.com/stretchr/testify/assert"
 	"net/http"
+	"os"
+	"os/signal"
 	"runtime"
+	"syscall"
 	"testing"
+	"time"
 )
 
-func TestRestAPI(t *testing.T) {
+
+func TestMain(m *testing.M) {
+	// Pretend to open our DB connection
+
+
+	flag.Parse()
 
 	runtime.GOMAXPROCS(runtime.NumCPU())
-	var quit = make(chan bool)
 
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	go func() {
-		APP = newApp("Apsis Homework")
-		APP.start()
-		<-quit
+		<-c
 		APP.shutdown()
+		<-time.After(2 * time.Second)
+		os.Exit(1)
 	}()
 
-	defer close(quit)
+	APP = newApp("Apsis Homework")
+	go func() {
+		APP.start()
+	}()
+
+	exitCode := m.Run()
+	os.Exit(exitCode)
+}
+
+
+func TestRestAPI(t *testing.T) {
 
 	resp, err := http.Get("http://localhost:8080/add/step/payam")
 	if err == nil {
@@ -84,8 +105,6 @@ func TestRestAPI(t *testing.T) {
 		defer resp4.Body.Close()
 	}
 
-
-
 	if err != nil {
 		t.Fail()
 	} else {
@@ -101,8 +120,6 @@ func TestRestAPI(t *testing.T) {
 		defer resp5.Body.Close()
 	}
 
-
-
 	if err != nil {
 		t.Fail()
 	} else {
@@ -111,6 +128,22 @@ func TestRestAPI(t *testing.T) {
 		assert.Equal(t, result.Name, "t2")
 		assert.Equal(t, result.Steps, 0)
 	}
+
+
+	resp6, err := http.Get("http://localhost:8080/get/allgroups")
+	if err == nil {
+		defer resp5.Body.Close()
+	}
+
+	if err != nil {
+		t.Fail()
+	} else {
+		var result outputGroup
+		json.NewDecoder(resp6.Body).Decode(&result)
+		assert.Equal(t, result.Name, "t2")
+		assert.Equal(t, result.Steps, 0)
+	}
+
 
 	//and so furth....
 

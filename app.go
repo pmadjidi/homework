@@ -33,6 +33,7 @@ func (a *App) execLeadBoardCmd(req *request) {
 	} else {
 		a.steperHash(req)
 		index = hextoint(req.Hash[0:SHARTSLICE])
+		req.index = index
 	}
 
 	if (req.Source == EXTERNAL) {
@@ -63,6 +64,7 @@ func (a *App) execGroupCmd(req *request) {
 	} else {
 		a.groupHash(req)
 		index = hextoint(req.Hash[0:SHARTSLICE])
+		req.index = index
 	}
 
 	if (req.Source == EXTERNAL) {

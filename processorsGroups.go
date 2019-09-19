@@ -147,6 +147,7 @@ func (p *pedometers) processListShardGroupsSeq(req *request) {
 	req.Results = make(map[string]leaderboard)
 	for aGroupName, aGroup := range p.groups {
 		groupReplica := make(leaderboard)
+		groupTotal := 0
 		for aPerson, _ := range aGroup {
 			newRequest := newRequestInternal()
 			newRequest.Name = aPerson
@@ -154,13 +155,16 @@ func (p *pedometers) processListShardGroupsSeq(req *request) {
 			newResp := <-newRequest.resp
 			if newResp.Error == nil {
 				groupReplica [aPerson] = newResp.Steps
+				groupTotal +=  newResp.Steps
 			} else {
 				req.Error = newResp.Error
 				req.resp <- req
 				close(req.resp)
 				return
 			}
+			groupReplica["-SUM:"] = groupTotal
 			req.Results[aGroupName] = groupReplica
+
 		}
 	}
 
@@ -201,6 +205,7 @@ func (p *pedometers) processListAllGroups(req *request) {
 
 	for aGroupName, aGroup := range p.groups {
 		groupReplica := make(leaderboard)
+		groupTotal := 0
 		for aPerson, _ := range aGroup {
 			newRequest := newRequestInternal()
 			newRequest.Name = aPerson
@@ -208,20 +213,17 @@ func (p *pedometers) processListAllGroups(req *request) {
 			newResp := <-newRequest.resp
 			if newResp.Error == nil {
 				groupReplica [aPerson] = newResp.Steps
+				groupTotal +=  newResp.Steps
 			} else {
 				req.Error = newResp.Error
 				req.resp <- req
 				close(req.resp)
 				return
 			}
+			groupReplica["-SUM"] = groupTotal
 			req.Results[aGroupName] = groupReplica
 		}
 	}
-
-	println("almost")
-
 	req.resp <- req
-	println("at")
 	close(req.resp)
-	println("end")
 }
