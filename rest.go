@@ -32,7 +32,7 @@ func (a *App) startWebServer() {
 }
 
 func (a *App) hello(w http.ResponseWriter, req *http.Request) {
-	json.NewEncoder(w).Encode("homework....")
+	json.NewEncoder(w).Encode("homework distributed....")
 }
 
 func (a *App) newStepper(w http.ResponseWriter, req *http.Request) {
