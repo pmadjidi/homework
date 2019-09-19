@@ -199,6 +199,25 @@ func (p *pedometers) processListAllGroups(req *request) {
 		}
 	}
 
+	for aGroupName, aGroup := range p.groups {
+		groupReplica := make(leaderboard)
+		for aPerson, _ := range aGroup {
+			newRequest := newRequestInternal()
+			newRequest.Name = aPerson
+			APP.GetWalker(newRequest)
+			newResp := <-newRequest.resp
+			if newResp.Error == nil {
+				groupReplica [aPerson] = newResp.Steps
+			} else {
+				req.Error = newResp.Error
+				req.resp <- req
+				close(req.resp)
+				return
+			}
+			req.Results[aGroupName] = groupReplica
+		}
+	}
+
 	println("almost")
 
 	req.resp <- req
