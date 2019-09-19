@@ -1,1 +1,1 @@
-docker run -d -p 9090:9090 homework
+docker run -d -p 9090:9090 homework-distributed
