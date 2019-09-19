@@ -12,5 +12,5 @@ WORKDIR /app
 COPY . .
 RUN go get .
 RUN go build --race -o main .
-EXPOSE 8080
+EXPOSE 9090
 CMD ["./main"]

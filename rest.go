@@ -28,7 +28,7 @@ func (a *App) configureRoutes() {
 }
 
 func (a *App) startWebServer() {
-	log.Fatal(http.ListenAndServe(":8080", a.Router))
+	log.Fatal(http.ListenAndServe(":9090", a.Router))
 }
 
 func (a *App) hello(w http.ResponseWriter, req *http.Request) {
