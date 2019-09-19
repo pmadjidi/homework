@@ -1,1 +1,1 @@
- docker build -t homework .
+ docker build -t homework-distributed .
