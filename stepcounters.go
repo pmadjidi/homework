@@ -94,6 +94,8 @@ func (p *pedometers) dispatchCommand(req *request) {
 		p.processListAllGroups(req)
 	case LISTGROUPS:
 		p.processListGroups(req)
+	case LISTSHARDGROUPS:
+		p.processListShardGroups(req)
 	default:
 		req.Error = &UnknownCmdError{}
 		req.resp <- req

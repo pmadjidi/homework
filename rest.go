@@ -23,6 +23,7 @@ func (a *App) configureRoutes() {
 	a.Router.HandleFunc("/extend/{group}/{person}", a.extendGroup).Methods("GET")
 	a.Router.HandleFunc("/get/group/{name}", a.getGroup).Methods("GET")
 	a.Router.HandleFunc("/get/allgroups", a.getAll).Methods("GET")
+	a.Router.HandleFunc("/get/shard/{index}", a.listNodeGroup).Methods("GET")
 
 }
 
@@ -257,8 +258,46 @@ func (a *App) getGroup(w http.ResponseWriter, req *http.Request) {
 	} else {
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(outputGroup{resp.Group, resp.Steps, resp.Result})
+		}
+}
+
+func (a *App) listNodeGroup(w http.ResponseWriter, req *http.Request) {
+
+
+
+	params := mux.Vars(req)
+	r := newRequest()
+	index, err := strconv.Atoi(params["shard"])
+	if err != nil {
+		r.index = index
+	} else {
+		r.index =  0
+	}
+	a.ListShardGroups(r)
+	resp := <-r.resp
+
+	if resp.Error != nil {
+		println(r.Error.Error())
+		switch resp.Error.(type) {
+		case *TimeOutError:
+			w.WriteHeader(http.StatusRequestTimeout)
+			w.Write([]byte("StatusRequestTimeout 408..."))
+		case *InvalidNameError:
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte("StatusBadRequest 400..."))
+		case *GroupDoesNotExistsError:
+			w.WriteHeader(http.StatusNotFound)
+			w.Write([]byte("StatusNotFound 404..."))
+		default:
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("StatusInternalServerError 500..."))
+		}
+	} else {
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(resp)
 	}
 }
+
 
 func (a *App) getAll(w http.ResponseWriter, req *http.Request) {
 
@@ -282,3 +321,4 @@ func (a *App) getAll(w http.ResponseWriter, req *http.Request) {
 		json.NewEncoder(w).Encode(resp.Results)
 	}
 }
+
