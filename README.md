@@ -61,4 +61,3 @@ Method GET
 /get/group/{name}
 
 /get/allgroups
-
