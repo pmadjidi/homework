@@ -1,9 +1,6 @@
 package main
 
 import "sync"
-import "fmt"
-
-
 
 func (p *pedometers) processAddGroup(req *request) {
 	_, found := p.groups[req.Group]
@@ -17,7 +14,6 @@ func (p *pedometers) processAddGroup(req *request) {
 	req.resp <- req
 	close(req.resp)
 }
-
 
 func (p *pedometers) processGetGroup(req *request) {
 	req.Result = make(leaderboard)
@@ -73,7 +69,7 @@ func (p *pedometers) processListGroups(req *request) {
 	for k, _ := range p.groups {
 		wg.Add(1)
 		go func(name string) {
-			println("name is",name)
+			println("name is", name)
 			newreq := newRequestInternal()
 			newreq.Group = name
 			APP.GetGroup(newreq)
@@ -87,15 +83,12 @@ func (p *pedometers) processListGroups(req *request) {
 		close(responseFromOthers)
 	}()
 
-
-
-
 	for resp := range responseFromOthers {
 		r := <-resp
 		if r.Error == nil {
 			r.Result["TOTAL: "+r.Group ] = r.Steps
 			req.Results[r.Group] = r.Result
-         PrettyPrint(req.Results)
+			PrettyPrint(req.Results)
 		} else {
 			req.Error = r.Error
 			req.resp <- req
@@ -106,43 +99,88 @@ func (p *pedometers) processListGroups(req *request) {
 
 	req.resp <- req
 	close(req.resp)
-	println("finishing processListGroups:",p.index)
+	println("finishing processListGroups:", p.index)
 }
 
 func (p *pedometers) processListShardGroups(req *request) {
-	println("processListAllGroupsNode begin")
+	println("processListAllGroupsNode begin: ", req.index)
 	req.Results = make(map[string]leaderboard)
-	for k, _ := range p.groups {
-		newRequest := newRequestInternal()
-		newRequest.Group = k
-		APP.GetGroup(newRequest)
-		ans := <-newRequest.resp
-		if ans.Error != nil {
-			req.Error = newRequest.Error
-			req.resp <- req
-			return
-		} else {
+	var wg sync.WaitGroup
+	responseFromOthers := make(chan chan *request, len(p.groups))
+	for aGroupName, aGroup := range p.groups {
+		groupReplica := make(leaderboard)
+		for aPerson, _ := range aGroup {
+			wg.Add(1)
+			go func(name, group string) {
+				newRequest := newRequestInternal()
+				newRequest.Name = name
+				newRequest.Group = group
+				APP.GetWalker(newRequest)
+				responseFromOthers <- newRequest.resp
+				wg.Done()
+			}(aPerson, aGroupName)
+		}
+		req.Results[aGroupName] = groupReplica
+	}
 
-			ans.Result[k+"-total"] = ans.Steps
-			req.Results[k] = ans.Result
+	go func() {
+		wg.Wait()
+		close(responseFromOthers)
+	}()
+
+	for resp := range responseFromOthers {
+		r := <-resp
+		if r.Error == nil {
+			req.Results[r.Group][r.Name] = r.Steps
+		} else {
+			println(r.Error.Error())
 		}
 	}
+
 	req.resp <- req
 	close(req.resp)
-	println("processListAllGroupsNode end")
+	println("processListAllGroupsNode end: ", req.index)
+}
+
+func (p *pedometers) processListShardGroupsSeq(req *request) {
+	println("processListAllGroupsNode begin: ", req.index)
+	req.Results = make(map[string]leaderboard)
+	for aGroupName, aGroup := range p.groups {
+		groupReplica := make(leaderboard)
+		for aPerson, _ := range aGroup {
+			newRequest := newRequestInternal()
+			newRequest.Name = aPerson
+			APP.GetWalker(newRequest)
+			newResp := <-newRequest.resp
+			if newResp.Error == nil {
+				groupReplica [aPerson] = newResp.Steps
+			} else {
+				req.Error = newResp.Error
+				req.resp <- req
+				close(req.resp)
+				return
+			}
+			req.Results[aGroupName] = groupReplica
+		}
+	}
+
+	req.resp <- req
+	close(req.resp)
+	println("processListAllGroupsNode end: ", req.index)
 }
 
 func (p *pedometers) processListAllGroups(req *request) {
 	req.Results = make(map[string]leaderboard)
 	var wg sync.WaitGroup
+
 	var responseFromOthers = make(chan chan *request, p.config.NUMBEROFSHARDS)
 	for shard := 0; shard < p.config.NUMBEROFSHARDS; shard++ {
 		if shard != p.index { // Obs Important to avoid deadlock....
 			wg.Add(1)
 			go func(index int) {
 				newreq := newRequestInternal()
-				newreq.shard = APP.shards[index]
-				APP.ListGroups(newreq)
+				newreq.index = index
+				APP.ListGroupsForAShardSeq(newreq)
 				responseFromOthers <- newreq.resp
 				wg.Done()
 			}(shard)
@@ -155,42 +193,12 @@ func (p *pedometers) processListAllGroups(req *request) {
 	}()
 
 	for resp := range responseFromOthers {
-		select {
-		case r := <-resp:
-
-			fmt.Printf("%+v\n", r)
-			println("&&&&&&& r is", r, r.Hash)
-			if r.Error == nil {
-				for k, v := range r.Results {
-					req.Results[k] = v
-					println("%%%%%", k, v)
-				}
-			} else {
-				println("Recived: Error", r.Error.Error())
-				req.Error = r.Error
-				req.resp <- req
-				close(req.resp)
-				return
-			}
-		default:
-
+		r := <-resp
+		for k, v := range r.Results {
+			req.Results[k] = v
 		}
 	}
 
-
-
-	/*
-		println("Here")
-		localReq := newRequestInternal()
-		p.processListGroups(localReq)
-		resp := <-localReq.resp
-		println("Here after processListGroups")
-
-		for k, v := range resp.Results {
-			req.Results[k] = v
-		}
-
-	*/
 	println("almost")
 
 	req.resp <- req

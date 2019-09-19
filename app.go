@@ -25,10 +25,15 @@ func (a *App) startShardHandler(quit chan bool) {
 }
 
 func (a *App) execLeadBoardCmd(req *request) {
+	var index int
 	waitDuration := time.Duration(a.config.TIMEOUT)
-	a.steperHash(req)
-	index := hextoint(req.Hash[0:SHARTSLICE])
 
+	if req.index >= 0 {
+		index = req.index
+	} else {
+		a.steperHash(req)
+		index = hextoint(req.Hash[0:SHARTSLICE])
+	}
 
 	if (req.Source == EXTERNAL) {
 		select {
@@ -39,30 +44,27 @@ func (a *App) execLeadBoardCmd(req *request) {
 			close(req.resp)
 		}
 	} else {
-		if req.shard == nil {
-			select {
-			case a.shards[index].leaderBoardCmdInternal <- req:
-			case <-time.After(waitDuration * time.Second):
-				req.Error = &TimeOutError{}
-				req.resp <- req
-				close(req.resp)
-			}
-		} else {
-			select {
-			case req.shard.leaderBoardCmdInternal <- req:
-			case <-time.After(waitDuration * time.Second):
-				req.Error = &TimeOutError{}
-				req.resp <- req
-				close(req.resp)
-			}
+		select {
+		case a.shards[index].leaderBoardCmdInternal <- req:
+		case <-time.After(waitDuration * time.Second):
+			req.Error = &TimeOutError{}
+			req.resp <- req
+			close(req.resp)
 		}
 	}
 }
 
 func (a *App) execGroupCmd(req *request) {
+	var index int
 	waitDuration := time.Duration(a.config.TIMEOUT)
-	a.groupHash(req)
-	index := hextoint(req.Hash[0:SHARTSLICE])
+
+	if req.index >= 0 {
+		index = req.index
+	} else {
+		a.groupHash(req)
+		index = hextoint(req.Hash[0:SHARTSLICE])
+	}
+
 	if (req.Source == EXTERNAL) {
 		select {
 		case a.shards[index].groupsCmd <- req:
@@ -72,23 +74,12 @@ func (a *App) execGroupCmd(req *request) {
 			close(req.resp)
 		}
 	} else {
-		if req.shard == nil {
-			select {
-			case a.shards[index].groupsCmdInternal <- req:
-			case <-time.After(waitDuration * time.Second):
-				req.Error = &TimeOutError{}
-				req.resp <- req
-				close(req.resp)
-			}
-		} else {
-			println("execGroupCmd, bypass shard...")
-			select {
-			case req.shard.groupsCmdInternal <- req:
-			case <-time.After(waitDuration * time.Second):
-				req.Error = &TimeOutError{}
-				req.resp <- req
-				close(req.resp)
-			}
+		select {
+		case a.shards[index].groupsCmdInternal <- req:
+		case <-time.After(waitDuration * time.Second):
+			req.Error = &TimeOutError{}
+			req.resp <- req
+			close(req.resp)
 		}
 	}
 }

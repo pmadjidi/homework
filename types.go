@@ -66,6 +66,5 @@ type request struct {
 	Result  leaderboard
 	Results map[string]leaderboard
 	resp    chan *request
-	shard  *pedometers
 	index   int
 }

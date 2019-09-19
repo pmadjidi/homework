@@ -20,8 +20,7 @@ func newRequest() *request {
 		nil,
 		nil,
 		make(chan *request, 1),
-		nil,
-		0,
+		-1,
 	}
 }
 
@@ -37,8 +36,7 @@ func newRequestInternal() *request {
 		nil,
 		nil,
 		make(chan *request, 1),
-		nil,
-		0,
+		-1,
 	}
 }
 

@@ -16,7 +16,8 @@ const (
 	LISTALLWALKERS
 	LISTGROUPS
 	LISTALLGROUPS
-	LISTSHARDGROUPS
+	LISTGROUPSFORASHARD
+	LISTGROUPSFORASHARDSEQ
 )
 
 func (c command) String() string {
@@ -34,7 +35,8 @@ func (c command) String() string {
 		"LISTALLWALKERS",
 		"LISTGROUPS",
 		"LISTALLGROUPS",
-		"LISTSHARDGROUPS",
+		"LISTGROUPSFORASHARD",
+		"LISTGROUPSFORASHARDSEQ",
 	}[c]
 }
 
@@ -172,9 +174,14 @@ func (a *App) ListGroups(req *request) {
 }
 
 
-func (a *App) ListShardGroups(req *request) {
-	req.Cmd = LISTSHARDGROUPS
-	req.Group = RandomString(10)
+func (a *App) ListGroupsForAShard(req *request) {
+	req.Cmd = LISTGROUPSFORASHARD
+	a.execGroupCmd(req)
+}
+
+
+func (a *App) ListGroupsForAShardSeq(req *request) {
+	req.Cmd = LISTGROUPSFORASHARDSEQ
 	a.execGroupCmd(req)
 }
 

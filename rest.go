@@ -262,18 +262,18 @@ func (a *App) getGroup(w http.ResponseWriter, req *http.Request) {
 }
 
 func (a *App) listNodeGroup(w http.ResponseWriter, req *http.Request) {
-
-
-
 	params := mux.Vars(req)
 	r := newRequest()
-	index, err := strconv.Atoi(params["shard"])
+	index, err := strconv.Atoi(params["index"])
 	if err != nil {
-		r.index = index
+		println("Error:",err.Error())
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("StatusBadRequest 400..."))
+		return
 	} else {
-		r.index =  0
+		r.index = index
 	}
-	a.ListShardGroups(r)
+	a.ListGroupsForAShard(r)
 	resp := <-r.resp
 
 	if resp.Error != nil {

@@ -97,7 +97,7 @@ func (p *pedometers) processListAllWalkers(req *request) {
 			go func(index int) {
 				println("shard", index)
 				newreq := newRequestInternal()
-				newreq.shard = APP.shards[index]
+				newreq.index = index
 				APP.ListWalkers(newreq)
 				responseFromOthers <- newreq.resp
 				wg.Done()
@@ -136,7 +136,7 @@ func (p *pedometers) processListAllWalkers(req *request) {
 }
 
 func (p *pedometers) processListWalkers(req *request) {
-	shard := req.shard
+	shard := req.index
 	println("processListWalkers", shard)
 	req.Result = make(leaderboard)
 	req.Steps = 0
