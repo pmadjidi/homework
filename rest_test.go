@@ -43,7 +43,7 @@ func TestMain(m *testing.M) {
 
 func TestRestAPI(t *testing.T) {
 
-	resp, err := http.Get("http://localhost:8080/add/step/payam")
+	resp, err := http.Get("http://localhost:9090/add/step/payam")
 	if err == nil {
 		defer resp.Body.Close()
 	}
@@ -56,7 +56,7 @@ func TestRestAPI(t *testing.T) {
 		assert.Equal(t, result["payam"], 0)
 	}
 
-	resp1, err := http.Get("http://localhost:8080/add/group/t1")
+	resp1, err := http.Get("http://localhost:9090/add/group/t1")
 	if err == nil {
 		defer resp1.Body.Close()
 	}
@@ -71,7 +71,7 @@ func TestRestAPI(t *testing.T) {
 		assert.Equal(t, result.Steps, 0)
 	}
 
-	resp2, err := http.Get("http://localhost:8080/extend/t1/payam")
+	resp2, err := http.Get("http://localhost:9090/extend/t1/payam")
 	if err == nil {
 		defer resp2.Body.Close()
 	}
@@ -85,7 +85,7 @@ func TestRestAPI(t *testing.T) {
 		assert.Equal(t, result.Steps, 0)
 	}
 
-	resp3, err := http.Get("http://localhost:8080/inc/payam/10")
+	resp3, err := http.Get("http://localhost:9090/inc/payam/10")
 	if err == nil {
 		defer resp3.Body.Close()
 	}
@@ -100,7 +100,7 @@ func TestRestAPI(t *testing.T) {
 		assert.Equal(t, result.Steps, 10)
 	}
 
-	resp4, err := http.Get("http://localhost:8080/get/group/t1")
+	resp4, err := http.Get("http://localhost:9090/get/group/t1")
 	if err == nil {
 		defer resp4.Body.Close()
 	}
@@ -115,7 +115,7 @@ func TestRestAPI(t *testing.T) {
 		assert.Equal(t, result.Members["payam"], 10)
 	}
 
-	resp5, err := http.Get("http://localhost:8080/add/group/t2")
+	resp5, err := http.Get("http://localhost:9090/add/group/t2")
 	if err == nil {
 		defer resp5.Body.Close()
 	}
@@ -130,7 +130,7 @@ func TestRestAPI(t *testing.T) {
 	}
 
 
-	resp6, err := http.Get("http://localhost:8080/get/allgroups")
+	resp6, err := http.Get("http://localhost:9090/get/allgroups")
 	if err == nil {
 		defer resp5.Body.Close()
 	}
