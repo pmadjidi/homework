@@ -43,14 +43,10 @@ func (p *pedometers) processRegisterSteps(req *request) {
 
 
 func (p *pedometers) processAddWalkerToGroup(req *request) {
-	aUserGroup, groupfound := p.groups[req.Group]
+	_, groupfound := p.groups[req.Group]
 
 	if !groupfound {
 		req.Error = &GroupDoesNotExistsError{}
-	} else if _, userfound := p.groups[req.Group][req.Name]; userfound {
-		req.Error = &NameExistsError{}
-	} else if len(aUserGroup) >= p.config.MAXNUMBEROFWALKERSINGROUP {
-		req.Error = &MaxNumberOFWalkersInGroupsReachedError{}
 	} else {
 
 		newReq := newRequestInternal()

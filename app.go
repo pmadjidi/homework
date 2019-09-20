@@ -15,6 +15,7 @@ func newApp(name string) *App {
 		mux.NewRouter(),
 		make(chan *request),
 		config,
+		make(map[string]string),
 	}
 }
 

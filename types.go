@@ -41,6 +41,7 @@ type App struct {
 	*mux.Router
 	Cmd      chan *request
 	*config
+	hashCache  map[string]string
 }
 
 type command int

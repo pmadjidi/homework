@@ -41,13 +41,23 @@ func (c command) String() string {
 }
 
 func (a *App) steperHash(req *request)  {
+	cachhit,found := a.hashCache[req.Name]
+	if !found {
 	req.Hash = calcHash(req.Name)
-	println("NAME:",req.Name,req.Hash)
+	a.hashCache[req.Name] = req.Hash
+	} else {
+		req.Hash = cachhit
+	}
 }
 
 func (a *App) groupHash(req *request)  {
-	req.Hash = calcHash(req.Group)
-	println("GROUP",req.Group,req.Hash)
+	cachhit,found := a.hashCache[req.Group]
+	if !found {
+		req.Hash = calcHash(req.Group)
+		a.hashCache[req.Group] = req.Hash
+	} else {
+		req.Hash = cachhit
+	}
 }
 
 func (a *App) chardName(req *request) string {
