@@ -42,6 +42,11 @@ to call use api:
 
 localhost:8080/apiUrl
 
+and for charded...
+
+localhost:8090/apiUrl
+
+
 
 API
 Method GET
