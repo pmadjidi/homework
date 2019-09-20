@@ -17,7 +17,7 @@ Range check on all app parameters should be implemented
 
 Some performance data is gathered, please refer to perfdata.txt
 API hosted on http://payam.ite.kth.se:8080
-for the distributed version please refer to  http://payam.ite.kth.se:9090
+for the distributed version please refer to  http://payam.ite.kth.se:8090
 
 
 To run locally:
