@@ -3,11 +3,13 @@ package main
 import (
 	"fmt"
 	"github.com/gorilla/mux"
+	"sync"
 	"time"
 )
 
 func newApp(name string) *App {
 	config := readConfig()
+	var cache sync.Map
 	return &App{
 		make(map[int]*pedometers),
 		make(chan bool),
@@ -15,7 +17,7 @@ func newApp(name string) *App {
 		mux.NewRouter(),
 		make(chan *request),
 		config,
-		make(map[string]string),
+		cache,
 	}
 }
 

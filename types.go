@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gorilla/mux"
+	"sync"
 )
 
 type leaderboard map[string]int
@@ -41,7 +42,7 @@ type App struct {
 	*mux.Router
 	Cmd      chan *request
 	*config
-	hashCache  map[string]string
+	cache sync.Map
 }
 
 type command int

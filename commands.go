@@ -41,22 +41,22 @@ func (c command) String() string {
 }
 
 func (a *App) steperHash(req *request)  {
-	cachhit,found := a.hashCache[req.Name]
+	cachhit,found := a.cache.Load(req.Name)
 	if !found {
 	req.Hash = calcHash(req.Name)
-	a.hashCache[req.Name] = req.Hash
+	a.cache.Store(req.Name ,req.Hash)
 	} else {
-		req.Hash = cachhit
+		req.Hash = cachhit.(string)
 	}
 }
 
 func (a *App) groupHash(req *request)  {
-	cachhit,found := a.hashCache[req.Group]
+	cachhit,found := a.cache.Load(req.Group)
 	if !found {
 		req.Hash = calcHash(req.Group)
-		a.hashCache[req.Group] = req.Hash
+		a.cache.Store(req.Group ,req.Hash)
 	} else {
-		req.Hash = cachhit
+		req.Hash = cachhit.(string)
 	}
 }
 
