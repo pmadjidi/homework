@@ -1,6 +1,6 @@
 # homework
 
-Background
+Background:
 
 The design is influenced by Hoare's work on CSP.
 
