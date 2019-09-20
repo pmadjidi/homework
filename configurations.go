@@ -23,7 +23,7 @@ import (
 
 func readIntFromEnv(name string) (int) {
 	var result int
-	MAXQUEUELENGTH := 100000
+	MAXQUEUELENGTH := 1
 	MAXITERATIONLIMIT := 1000
 
 	MAXNUMBEROFSTEPSINPUT := 1000
@@ -31,7 +31,7 @@ func readIntFromEnv(name string) (int) {
 	MAXNUMBEROFGROUPS := 100000
 	MAXNUMBEROFWALKERSINGROUP := 2000
 	TIMEOUT := 2
-	HASHBITSTOSHARD := 2
+	HASHBITSTOSHARD := 1
 	PORT  := 8090
 
 	fromEnv := os.Getenv(name)

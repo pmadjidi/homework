@@ -91,7 +91,6 @@ func (p *pedometers) processListAllWalkers(req *request) {
 		if shard != p.index { // Obs Important to avoid dealock....
 			wg.Add(1)
 			go func(index int) {
-				println("shard", index)
 				newreq := newRequestInternal()
 				newreq.index = index
 				APP.ListWalkers(newreq)
@@ -115,7 +114,6 @@ func (p *pedometers) processListAllWalkers(req *request) {
 			req.Steps += r.Steps
 
 		} else {
-			println("Recived: Error", r.Error.Error())
 			req.Error = r.Error
 			req.resp <- req
 			close(req.resp)
@@ -132,8 +130,6 @@ func (p *pedometers) processListAllWalkers(req *request) {
 }
 
 func (p *pedometers) processListWalkers(req *request) {
-	shard := req.index
-	println("processListWalkers", shard)
 	req.Result = make(leaderboard)
 	req.Steps = 0
 	for k, v := range p.leaderboard {

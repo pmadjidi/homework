@@ -74,8 +74,6 @@ func (p *pedometers) dispatchCommand(req *request) {
 		p.processAddWalker(req)
 	case REGISTERSTEPS:
 		p.processRegisterSteps(req)
-	case ADDGROUP:
-		p.processAddGroup(req)
 	case ADDWALKERTOGROUP:
 		p.processAddWalkerToGroup(req)
 	case DELETEWALKER:
@@ -84,20 +82,18 @@ func (p *pedometers) dispatchCommand(req *request) {
 		p.processGetWalker(req)
 	case RESETSTEPS:
 		p.processResetSteps(req)
-	case GETGROUP:
-		p.processGetGroup(req)
 	case LISTWALKERS:
 		p.processListWalkers(req)
 	case LISTALLWALKERS:
 		p.processListAllWalkers(req)
+	case ADDGROUP:
+		p.processAddGroup(req)
+	case GETGROUP:
+		p.processGetGroup(req)
 	case LISTALLGROUPS:
 		p.processListAllGroups(req)
-	case LISTGROUPS:
-		p.processListGroups(req)
 	case LISTGROUPSFORASHARD:
-		p.processListShardGroups(req)
-	case LISTGROUPSFORASHARDSEQ:
-		p.processListShardGroupsSeq(req)
+		p.processListGroupForShards(req)
 	default:
 		req.Error = &UnknownCmdError{}
 		req.resp <- req

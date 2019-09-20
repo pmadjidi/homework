@@ -41,6 +41,7 @@ func (a *App) execLeadBoardCmd(req *request) {
 		a.steperHash(req)
 		index = hextoint(req.Hash[0:a.config.HASHBITSTOSHARD])
 		req.index = index
+		println(req.Cmd.String()," To Node: ",req.index)
 	}
 
 	if (req.Source == EXTERNAL) {
@@ -71,6 +72,7 @@ func (a *App) execGroupCmd(req *request) {
 		a.groupHash(req)
 		index = hextoint(req.Hash[0:a.config.HASHBITSTOSHARD])
 		req.index = index
+		println(req.Cmd.String()," To Node: ",req.index )
 	}
 
 	if (req.Source == EXTERNAL) {

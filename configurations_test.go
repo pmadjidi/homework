@@ -19,7 +19,7 @@ func TestReadConfigurationOnDefaults(t *testing.T) {
 
 	config := readConfig()
 
-	assert.Equal(t, config.MAXQUEUELENGTH,100000 , "shoud be 100000")
+	assert.Equal(t, config.MAXQUEUELENGTH,1 , "shoud be 100000")
 	assert.Equal(t, config.MAXITERATIONLIMIT,1000 , "shoud be 1000")
 	assert.Equal(t, config.MAXNUMBEROFSTEPSINPUT,1000 , "shoud be 100000")
 	assert.Equal(t, config.MAXNUMBERSOFWALKERS,1000000 , "shoud be 100000")
