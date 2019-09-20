@@ -40,7 +40,13 @@ checkout the branch master or sharded_map
 
 to call use api:
 
-localhost:8080/apiUrl
+localhost:8080/apiUrl 
+
+and for charded...
+
+localhost:8090/apiUrl 
+
+
 
 
 API
