@@ -90,8 +90,8 @@ func (p *pedometers) processListAllWalkers(req *request) {
 
 	req.Result = make(leaderboard)
 	var wg sync.WaitGroup
-	var responseFromOthers = make(chan chan *request, p.config.NUMBEROFSHARDS-1)
-	for shard := 0; shard < p.config.NUMBEROFSHARDS; shard++ {
+	var responseFromOthers = make(chan chan *request, p.config.SHARDS -1)
+	for shard := 0; shard < p.config.SHARDS ; shard++ {
 		if shard != p.index { // Obs Important to avoid dealock....
 			wg.Add(1)
 			go func(index int) {

@@ -177,8 +177,8 @@ func (p *pedometers) processListAllGroups(req *request) {
 	req.Results = make(map[string]leaderboard)
 	var wg sync.WaitGroup
 
-	var responseFromOthers = make(chan chan *request, p.config.NUMBEROFSHARDS)
-	for shard := 0; shard < p.config.NUMBEROFSHARDS; shard++ {
+	var responseFromOthers = make(chan chan *request, p.config.SHARDS -1)
+	for shard := 0; shard < p.config.SHARDS  ; shard++ {
 		if shard != p.index { // Obs Important to avoid deadlock....
 			wg.Add(1)
 			go func(index int) {

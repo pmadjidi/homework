@@ -1,0 +1,7 @@
+curl http://localhost:8090/add/group/\[1-200\]
+curl http://localhost:8090/add/step/\[1-200\]
+curl http://localhost:8090/inc/\[1-200\]/100
+curl http://localhost:8090/extend/\[1-200\]/\[1-200\]
+curl http://localhost:8090/get/allsteps
+curl http://localhost:8090/get/allgroups
+

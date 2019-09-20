@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"os"
 	"strconv"
 )
@@ -30,7 +31,8 @@ func readIntFromEnv(name string) (int) {
 	MAXNUMBEROFGROUPS := 100000
 	MAXNUMBEROFWALKERSINGROUP := 2000
 	TIMEOUT := 2
-	NUMBEROFSHARDS := 16
+	HASHBITSTOSHARD := 2
+	PORT  := 8090
 
 	fromEnv := os.Getenv(name)
 	iEnv, err := strconv.Atoi(fromEnv)
@@ -78,11 +80,17 @@ func readIntFromEnv(name string) (int) {
 		} else {
 			result = iEnv
 		}
-	case "NUMBEROFSHARDS":
+	case "HASHBITSTOSHARD":
 		if err != nil {
-			result = NUMBEROFSHARDS
+			result = HASHBITSTOSHARD
 		} else {
-			result = upper_power_of_two(iEnv)
+			result = iEnv
+		}
+	case "PORT":
+		if err != nil {
+			result = PORT
+		} else {
+			result = iEnv
 		}
 	}
 
@@ -90,6 +98,8 @@ func readIntFromEnv(name string) (int) {
 }
 
 func readConfig() *config {
+	NUMBEROFHASHBITS := readIntFromEnv("HASHBITSTOSHARD")
+	SHARDS := int(math.Pow(16,float64(NUMBEROFHASHBITS)))
 	return &config{
 		readIntFromEnv("MAXQUEUELENGTH"),
 		readIntFromEnv("MAXITERATIONLIMIT"),
@@ -98,7 +108,10 @@ func readConfig() *config {
 		readIntFromEnv("MAXNUMBEROFGROUPS"),
 		readIntFromEnv("MAXNUMBEROFWALKERSINGROUP"),
 		readIntFromEnv("TIMEOUT"),
-		readIntFromEnv("NUMBEROFSHARDS"),
+		SHARDS,
+		NUMBEROFHASHBITS,
+		readIntFromEnv("PORT"),
+
 
 	}
 }

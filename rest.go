@@ -28,7 +28,9 @@ func (a *App) configureRoutes() {
 }
 
 func (a *App) startWebServer() {
-	log.Fatal(http.ListenAndServe(":9090", a.Router))
+	PORT :=  ":" +  strconv.Itoa(a.config.PORT)
+	println("Opening connection to port:",PORT)
+	log.Fatal(http.ListenAndServe(PORT, a.Router))
 }
 
 func (a *App) hello(w http.ResponseWriter, req *http.Request) {

@@ -51,7 +51,7 @@ func (a *App) groupHash(req *request)  {
 }
 
 func (a *App) chardName(req *request) string {
-	return req.Hash[0:SHARTSLICE]
+	return req.Hash[0:a.config.SHARDS]
 }
 
 

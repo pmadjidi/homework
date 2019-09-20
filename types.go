@@ -27,13 +27,16 @@ type config struct {
 	MAXNUMBEROFGROUPS         int
 	MAXNUMBEROFWALKERSINGROUP int
 	TIMEOUT int
-	NUMBEROFSHARDS int
+	SHARDS int
+	HASHBITSTOSHARD int
+	PORT int
 }
 
 type shards map[int]*pedometers
 
 type App struct {
 	shards
+	begin chan bool
 	quit chan bool
 	*mux.Router
 	Cmd      chan *request

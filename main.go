@@ -17,9 +17,10 @@ func main() {
 	c := make(chan os.Signal)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	go func() {
+
 		<-c
 		APP.shutdown()
-		<-time.After(2 * time.Second)
+		<-time.After(2 * time.Duration(APP.config.TIMEOUT))
 		os.Exit(1)
 	}()
 

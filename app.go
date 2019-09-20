@@ -11,6 +11,7 @@ func newApp(name string) *App {
 	return &App{
 		make(map[int]*pedometers),
 		make(chan bool),
+		make(chan bool),
 		mux.NewRouter(),
 		make(chan *request),
 		config,
@@ -18,10 +19,15 @@ func newApp(name string) *App {
 }
 
 func (a *App) startShardHandler(quit chan bool) {
-	for i := 0; i < a.config.NUMBEROFSHARDS; i++ {
+
+	for i := 0; i < a.config.SHARDS ; i++ {
 		a.shards[i] = newPedometers(i, a.config)
 		a.shards[i].startPedometers(quit)
 	}
+	go func() {
+		a.begin <-true
+	}()
+
 }
 
 func (a *App) execLeadBoardCmd(req *request) {
@@ -32,7 +38,7 @@ func (a *App) execLeadBoardCmd(req *request) {
 		index = req.index
 	} else {
 		a.steperHash(req)
-		index = hextoint(req.Hash[0:SHARTSLICE])
+		index = hextoint(req.Hash[0:a.config.HASHBITSTOSHARD])
 		req.index = index
 	}
 
@@ -57,20 +63,19 @@ func (a *App) execLeadBoardCmd(req *request) {
 
 func (a *App) execGroupCmd(req *request) {
 	var index int
-	waitDuration := time.Duration(a.config.TIMEOUT)
 
 	if req.index >= 0 {
 		index = req.index
 	} else {
 		a.groupHash(req)
-		index = hextoint(req.Hash[0:SHARTSLICE])
+		index = hextoint(req.Hash[0:a.config.HASHBITSTOSHARD])
 		req.index = index
 	}
 
 	if (req.Source == EXTERNAL) {
 		select {
 		case a.shards[index].groupsCmd <- req:
-		case <-time.After(waitDuration * time.Second):
+		case <-time.After(time.Duration(a.config.TIMEOUT) * time.Second):
 			req.Error = &TimeOutError{}
 			req.resp <- req
 			close(req.resp)
@@ -78,7 +83,7 @@ func (a *App) execGroupCmd(req *request) {
 	} else {
 		select {
 		case a.shards[index].groupsCmdInternal <- req:
-		case <-time.After(waitDuration * time.Second):
+		case <-time.After(time.Duration(a.config.TIMEOUT) * time.Second):
 			req.Error = &TimeOutError{}
 			req.resp <- req
 			close(req.resp)
@@ -92,6 +97,7 @@ func (a *App) start() {
 	a.configureRoutes()
 	a.startShardHandler(APP.quit)
 	a.startWebServer()
+	<- a.begin
 }
 
 func (a *App) shutdown() {
