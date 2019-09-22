@@ -8,13 +8,13 @@ Three implementations provided. The branch master provides an implementation wit
 the branch sharded_map provides an implementation with sharded map structure to avoid serialization of the
 requests due to serialization of the map data structure guarded by channel.
 Sharded map scales better but the code is more complex.
-Branch syncMap is the least complex code and build on golang sync.Map but the caveat with this implementation is that 
-sync.Map datas structure is build upon key value of type interface{} and thus the typesafty of golang is out of the 
-window. Access to the map needs explicit typecasts which can result in run time panics...
+Branch syncMap is the least complex code and build on Golang sync.Map but the caveat with this implementation is that 
+sync.Map data structure is build upon key value of type interface{} and thus the type safety of Golang is out of the 
+window. Access to the map needs explicit type casts which can result in run time panics...
 
 
 Caveats branch sharded_map, the implementation with shard map structure needs more testing
-Range check on all app parameters should be implemented
+Range check on all applications parameters should be implemented
 
 
 
