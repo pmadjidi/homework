@@ -26,7 +26,7 @@ func (p *pedometers) AddWalker(name string) error {
 func (p *pedometers) GetWalker(name string) (steps int, err error) {
 	steps = -1
 	err = nil
-	var stepPointer *int = nil
+	var stepPointer *int32 = nil
 	if name == EMPTYSTRING {
 		err = &InvalidNameError{}
 	} else {
@@ -34,14 +34,14 @@ func (p *pedometers) GetWalker(name string) (steps int, err error) {
 		if !ok {
 			err = &NameDoesNotExistsError{}
 		} else {
-			stepPointer = val.(*int)
-			steps = *stepPointer
+			stepPointer = val.(*int32)
+			steps = int(*stepPointer)
 		}
 	}
 	return
 }
 
-func (p *pedometers) RegisterSteps(name string, incSteps int32) (steps int, err error) {
+func (p *pedometers) RegisterSteps(name string, incSteps int32) (steps int32, err error) {
 	steps = -1
 	err = nil
 	var stepPointer *int32 = nil
@@ -57,7 +57,7 @@ func (p *pedometers) RegisterSteps(name string, incSteps int32) (steps int, err 
 			err = &NameDoesNotExistsError{}
 		} else {
 			stepPointer = val.(*int32)
-			atomic.AddInt32(stepPointer, incSteps)
+			steps = atomic.AddInt32(stepPointer, incSteps)
 		}
 	}
 	return
@@ -147,8 +147,8 @@ func (p *pedometers) ListAllSteppers() map[string]int {
 	var AllSteppers = make(map[string]int)
 	p.leaderboard.Range(func(k,v interface{}) bool {
 		key := k.(string)
-		val := *v.(*int)
-		AllSteppers[key] = val
+		val := *v.(*int32)
+		AllSteppers[key] = int(val)
 		return true
 	})
 	return AllSteppers

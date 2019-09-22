@@ -101,7 +101,7 @@ func (a *App) registerSteps(w http.ResponseWriter, req *http.Request) {
 		}
 	} else {
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(outputStep{Name, s})
+		json.NewEncoder(w).Encode(outputStep{Name, int(s)})
 	}
 }
 
@@ -166,7 +166,7 @@ func (a *App) newGroup(w http.ResponseWriter, req *http.Request) {
 		}
 	} else {
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(outputGroup{Group, 0, nil})
+		json.NewEncoder(w).Encode(outputGroupMembers{Group, 0, nil})
 	}
 }
 
@@ -204,7 +204,7 @@ func (a *App) extendGroup(w http.ResponseWriter, req *http.Request) {
 		}
 	} else {
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(outputStep{Name, Group})
+		json.NewEncoder(w).Encode(outputGroup{Name, Group})
 	}
 }
 
@@ -238,7 +238,7 @@ func (a *App) getGroup(w http.ResponseWriter, req *http.Request) {
 }
 
 func (a *App) getAll(w http.ResponseWriter, req *http.Request) {
-	
+
 	allGroups,e := a.pedometers.ListAllGroups()
 
 	if e  != nil {

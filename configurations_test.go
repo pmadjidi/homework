@@ -9,7 +9,7 @@ import (
 
 func TestReadConfigurationOnDefaults(t *testing.T) {
 
-	os.Setenv("MAXQUEUELENGTH","")
+
 	os.Setenv("MAXITERATIONLIMIT","")
 	os.Setenv("MAXNUMBEROFSTEPSINPUT","")
 	os.Setenv("MAXNUMBERSOFWALKERS","")
@@ -19,7 +19,7 @@ func TestReadConfigurationOnDefaults(t *testing.T) {
 
 	config := readConfig()
 
-	assert.Equal(t, config.MAXQUEUELENGTH,100000 , "shoud be 100000")
+
 	assert.Equal(t, config.MAXITERATIONLIMIT,1000 , "shoud be 1000")
 	assert.Equal(t, config.MAXNUMBEROFSTEPSINPUT,1000 , "shoud be 100000")
 	assert.Equal(t, config.MAXNUMBERSOFWALKERS,1000000 , "shoud be 100000")
@@ -40,7 +40,6 @@ func TestReadConfigurationOnEnv(t *testing.T) {
 
 	config := readConfig()
 
-	assert.Equal(t, config.MAXQUEUELENGTH,30000 , "shoud be 30000")
 	assert.Equal(t, config.MAXITERATIONLIMIT,40000 , "shoud be 1000")
 	assert.Equal(t, config.MAXNUMBEROFSTEPSINPUT,50000 , "shoud be 40000")
 	assert.Equal(t, config.MAXNUMBERSOFWALKERS,60000 , "shoud be 60000")
@@ -62,7 +61,6 @@ func TestReadConfigurationOneMissing(t *testing.T) {
 
 	config := readConfig()
 
-	assert.Equal(t, config.MAXQUEUELENGTH,30000 , "shoud be 30000")
 	assert.Equal(t, config.MAXITERATIONLIMIT,40000 , "shoud be 1000")
 	assert.Equal(t, config.MAXNUMBEROFSTEPSINPUT,1000 , "shoud be 1000")
 	assert.Equal(t, config.MAXNUMBERSOFWALKERS,60000 , "shoud be 60000")

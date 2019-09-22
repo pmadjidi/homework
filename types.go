@@ -11,7 +11,7 @@ type pedometers struct {
 	name string
 	leaderboard sync.Map
 	groups sync.Map
-	config                 *config
+	config  *config
 }
 
 type config struct {
@@ -26,7 +26,6 @@ type config struct {
 
 type App struct {
 	*pedometers
-	quit chan bool
 	*mux.Router
 	*config
 }
