@@ -71,7 +71,7 @@ func (p *pedometers) AddGroup(name string) error {
 	} else {
 		_, ok := p.groups.Load(name)
 		if ok {
-			err = &NameExistsError{}
+			err = &GroupExistsError{}
 		} else {
 			var aGroup sync.Map
 			p.groups.Store(name, &aGroup)
@@ -88,7 +88,7 @@ func (p *pedometers) getGroup(name string) (*sync.Map,error) {
 	} else {
 		aGroup , ok := p.groups.Load(name)
 		if !ok {
-			err = &NameDoesNotExistsError{}
+			err = &GroupDoesNotExistsError{}
 		} else {
 			group = aGroup.(*sync.Map)
 		}
@@ -97,17 +97,21 @@ func (p *pedometers) getGroup(name string) (*sync.Map,error) {
 }
 
 func (p *pedometers) AddWalkerToGroup(name,group string) error {
-	var err error = nil
+	var ERR error = nil
 	if name  == EMPTYSTRING {
-		err = &InvalidNameError{}
+		ERR = &InvalidNameError{}
 	} else if group == EMPTYSTRING {
-		err = &InvalidGroupNameError{}
-	} else if _, err = p.GetWalker(name); err != nil && err.Error() == "NAME_MISSING"{
-			err =&NameDoesNotExistsError{}
-	} else if agroup, err := p.getGroup(group); err == nil {
-		agroup.Store(name,true )
+		ERR = &InvalidGroupNameError{}
+	} else {
+		if _, err := p.GetWalker(name); err != nil && err.Error() == "NAME_MISSING" {
+			ERR = &NameDoesNotExistsError{}
+		} else if agroup, err := p.getGroup(group); err == nil {
+			agroup.Store(name, true)
+		} else {
+			ERR =  err
+		}
 	}
-	return err
+	return ERR
 }
 
 //not implemented yet
@@ -151,12 +155,15 @@ func (p *pedometers) ListGroup(group string) (map[string]int,error) {
 
 func (p *pedometers) ListAllSteppers() map[string]int {
 	var AllSteppers = make(map[string]int)
+	var total int = 0
 	p.leaderboard.Range(func(k,v interface{}) bool {
 		key := k.(string)
 		val := *v.(*int32)
 		AllSteppers[key] = int(val)
+		total += int(val)
 		return true
 	})
+	AllSteppers["TOTAL"] = total
 	return AllSteppers
 }
 

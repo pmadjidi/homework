@@ -27,7 +27,10 @@ func (a *App) configureRoutes() {
 }
 
 func (a *App) startWebServer() {
-	log.Fatal(http.ListenAndServe(":8080", a.Router))
+	go func () {
+		log.Fatal(http.ListenAndServe(":8080", a.Router))
+		<- a.quit
+	}()
 }
 
 func (a *App) hello(w http.ResponseWriter, req *http.Request) {
@@ -183,10 +186,7 @@ func (a *App) extendGroup(w http.ResponseWriter, req *http.Request) {
 	if e != nil {
 		println(e.Error())
 		switch e.(type) {
-		case *TimeOutError:
-			w.WriteHeader(http.StatusRequestTimeout)
-			w.Write([]byte("StatusRequestTimeout 408..."))
-		case *InvalidNameError, *InvalidGroupNameError:
+		case *InvalidNameError, *InvalidGroupNameError,*NameDoesNotExistsError:
 			w.WriteHeader(http.StatusBadRequest)
 			w.Write([]byte("StatusBadRequest 400..."))
 		case *NameExistsError:

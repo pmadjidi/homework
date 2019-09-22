@@ -2,13 +2,26 @@ package main
 
 import (
 	"github.com/stretchr/testify/assert"
+	"os"
 	"strconv"
 	"sync"
 	"testing"
 )
 
+
+func TestMain(m *testing.M) {
+	APP = newApp("Apsis Homework")
+	APP.start()
+	code := m.Run()
+	close(APP.quit)
+	os.Exit(code)
+}
+
 func TestAddWalkerFail(t *testing.T) {
 	e := APP.AddWalker("")
+	if e == nil {
+		println("error is nil....")
+	}
 	assert.Equal(t, e.Error(), "NO_NAME", "Should generate NO_NAME")
 }
 
@@ -23,23 +36,23 @@ func TestAddWalkerSucess(t *testing.T) {
 
 func TestAddWalker(t *testing.T) {
 
-	e := APP.AddWalker("Payam")
+	e := APP.AddWalker("Pooya")
 	assert.Equal(t,e, nil, "No Error")
 
 
 	APP.AddWalker("Mikael")
 	result := APP.ListAllSteppers()
-	assert.Equal(t, result["Payam"], 0, "Counter set to zer0")
+	assert.Equal(t, result["Pooya"], 0, "Counter set to zer0")
 	assert.Equal(t, result["Mikael"], 0, "Counter set to zer0")
 }
 
 func TestAddWalkerFailExits(t *testing.T) {
-	name := "Payam"
+	name := "Anna"
 	e := APP.AddWalker(name)
 	assert.Equal(t, e, nil, "No Error")
 
 
-	e := APP.AddWalker(name)
+	e = APP.AddWalker(name)
 	assert.Equal(t,e.Error(), "NAME_EXISTS", "Should generate NAME_EXISTS")
 }
 
@@ -60,13 +73,13 @@ func TestConcurrentWalker(t *testing.T) {
 		}()
 	}
 	waitgroup.Wait()
-	res := APP.ListAllSteppers()
+	result := APP.ListAllSteppers()
 	assert.Equal(t, result["Payam"], APP.config.MAXITERATIONLIMIT, "Payam took all the steps")
 
 }
 
 func TestConcurrentWalkerWithStepArgument(t *testing.T) {
-	name := "Payam"
+	name := "Philip"
 	APP.AddWalker(name)
 	var waitgroup sync.WaitGroup
 	for i := 0; i < APP.config.MAXITERATIONLIMIT; i++ {
@@ -79,7 +92,7 @@ func TestConcurrentWalkerWithStepArgument(t *testing.T) {
 	waitgroup.Wait()
 	result := APP.ListAllSteppers()
 
-	assert.Equal(t, result["Payam"], APP.config.MAXITERATIONLIMIT*5, "Payam took all the steps")
+	assert.Equal(t, result["Philip"], APP.config.MAXITERATIONLIMIT*5, "Philip took all the steps")
 
 }
 
@@ -110,7 +123,7 @@ func TestConcurrentWalkerAPIrace(t *testing.T) {
 	for i := 0; i < APP.config.MAXITERATIONLIMIT; i++ {
 		waitgroup.Add(1)
 		go func(index int) {
-			name  := "Payam" + strconv.Itoa(index)
+			name  := "Viktor" + strconv.Itoa(index)
 			APP.AddWalker(name)
 			waitgroup.Done()
 		}(i)
@@ -120,14 +133,14 @@ func TestConcurrentWalkerAPIrace(t *testing.T) {
 	for i := 0; i < APP.config.MAXITERATIONLIMIT; i++ {
 		waitgroup.Add(1)
 		go func(index int) {
-			name := "Payam" + strconv.Itoa(index)
+			name := "Viktor" + strconv.Itoa(index)
 			APP.RegisterSteps(name ,10)
 			waitgroup.Done()
 		}(i)
 
 		waitgroup.Add(1)
 		go func(index int) {
-			name := "Payam" + strconv.Itoa(index)
+			name := "Viktor" + strconv.Itoa(index)
 			APP.RegisterSteps(name,10)
 			waitgroup.Done()
 		}(i)
@@ -142,13 +155,10 @@ func TestConcurrentWalkerAPIrace(t *testing.T) {
 	var missed = 0
 
 	for i := 0; i < APP.config.MAXITERATIONLIMIT; i++ {
-		if result["Payam"+strconv.Itoa(i)] != 20 {
+		if result["Viktor"+strconv.Itoa(i)] != 20 {
 			missed++
 		}
 	}
-
-	println("***********************************************", missed)
-
 	assert.Equal(t, missed, 0, "Can not increment stepcounter before creation")
 	
 }
@@ -156,7 +166,7 @@ func TestConcurrentWalkerAPIrace(t *testing.T) {
 func TestAddGrouprFail(t *testing.T) {
 
 	e := APP.AddGroup("")
-	assert.EqualError(t, e, "NO_GROUP", "Should generate NO_GROUP")
+	assert.EqualError(t, e, "NO_NAME", "Should generate NO_GROUP")
 }
 
 func TestAddGrouprSuccess(t *testing.T) {
@@ -180,50 +190,39 @@ func TestAddGrouprExistFail(t *testing.T) {
 }
 
 func TestAddWalkerToGroupSucess(t *testing.T) {
-	e := APP.AddWalker("Payam")
+	e := APP.AddWalker("PAYAM")
 	assert.Equal(t, e, nil, "No Error")
 	e = APP.AddGroup("KTH")
 	assert.Equal(t, e, nil, "No Error")
 
 
-	e = APP.AddWalkerToGroup("Payam","KTH")
+	e = APP.AddWalkerToGroup("PAYAM","KTH")
 	assert.Equal(t,e , nil, "No Error")
 
 
 	result := APP.ListAllSteppers()
-	assert.Equal(t, result["Payam"], 0, "Counter set to zer0")
+	assert.Equal(t, result["PAYAM"], 0, "Counter set to zer0")
 }
 
 func TestAddWalkerToGroupFail(t *testing.T) {
-
-
-
-	e := APP.AddWalker("Payam")
+	e := APP.AddWalker("PADDY")
 	assert.Equal(t, e, nil, "No Error")
-
-
-
-	APP.AddGroup("Apsis")
-
-	APP.AddWalkerToGroup("Payam","KTH")
-
-
+	e = APP.AddWalkerToGroup("PADDY","ITENHETEN")
 	assert.EqualError(t, e, "GROUP_MISSING", "Should generate GROUP_MISSING")
 
 }
 
 func TestAddMultpleWalkersToMultipleGroups(t *testing.T) {
 	var waitgroup sync.WaitGroup
-	APP.AddGroup("TestGroup")
+	groupName := "SUPERSTEPPERS"
+	APP.AddGroup(groupName)
 	for i := 0; i < APP.config.MAXITERATIONLIMIT; i++ {
 		waitgroup.Add(1)
 		go func(index int) {
-
-			name := "Payam" + strconv.Itoa(index)
+			name := "Adam" + strconv.Itoa(index)
 			APP.AddWalker(name)
-
 			APP.RegisterSteps(name,10)
-			APP.AddWalkerToGroup(name,"TestGroup")
+			APP.AddWalkerToGroup(name,groupName)
 			waitgroup.Done()
 		}(i)
 	}
@@ -231,14 +230,8 @@ func TestAddMultpleWalkersToMultipleGroups(t *testing.T) {
 	waitgroup.Wait()
 
 
-	result, e := APP.ListGroup("TestGroup")
-
-
-	assert.Equal(t, res.Steps, p.config.MAXITERATIONLIMIT*10, "Testgroup should add up")
-
-	req = newRequest()
-	p.ListAll(req)
-	res = <-req.resp
-	assert.Equal(t, res.Steps, p.config.MAXITERATIONLIMIT*10, "List all should add up")
+	result, err := APP.ListGroup(groupName)
+	assert.Equal(t,err, nil, "No Error")
+	assert.Equal(t, result["TOTAL"], APP.config.MAXITERATIONLIMIT*10, "should add up")
 
 }

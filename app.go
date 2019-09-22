@@ -11,6 +11,7 @@ func newApp(name string) *App {
 		newPedometers(name, config),
 		mux.NewRouter(),
 		config,
+		make(chan bool),
 	}
 }
 
@@ -23,4 +24,5 @@ func (a *App) start() {
 
 func (a *App) shutdown() {
 	fmt.Println("Exiting...")
+	close(a.quit)
 }

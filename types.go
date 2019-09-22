@@ -28,6 +28,7 @@ type App struct {
 	*pedometers
 	*mux.Router
 	*config
+	quit chan bool
 }
 
 type command int
