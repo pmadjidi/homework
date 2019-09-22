@@ -9,7 +9,6 @@ func newApp(name string) *App {
 	config := readConfig()
 	return &App{
 		newPedometers(name, config),
-		make(chan bool),
 		mux.NewRouter(),
 		config,
 	}

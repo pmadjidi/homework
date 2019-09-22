@@ -36,14 +36,12 @@ func (a *App) hello(w http.ResponseWriter, req *http.Request) {
 
 func (a *App) newStepper(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
-	r := newRequest()
-	r.Name = params["person"]
-	a.AddWalker(r)
-	resp := <-r.resp
+	Name := params["person"]
+	err := a.pedometers.AddWalker(Name)
 
-	if resp.Error != nil {
-		println(r.Error.Error())
-		switch resp.Error.(type) {
+	if err != nil {
+		println(err.Error())
+		switch err.(type) {
 		case *TimeOutError:
 			w.WriteHeader(http.StatusRequestTimeout)
 			w.Write([]byte("StatusRequestTimeout 408..."))
@@ -62,7 +60,7 @@ func (a *App) newStepper(w http.ResponseWriter, req *http.Request) {
 		}
 	} else {
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(outputStep{resp.Name, resp.Steps})
+		json.NewEncoder(w).Encode(outputStep{Name, 0})
 	}
 }
 
@@ -78,16 +76,13 @@ func (a *App) registerSteps(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	r := newRequest()
-	r.Name = params["person"]
-	r.Steps = steps
+	Name := params["person"]
 
-	a.RegisterSteps(r)
-	resp := <-r.resp
+	s, e := a.pedometers.RegisterSteps(Name, int32(steps))
 
-	if resp.Error != nil {
-		println("Error...", r.Error.Error())
-		switch resp.Error.(type) {
+	if e != nil {
+		println("Error...", e.Error())
+		switch e.(type) {
 		case *TimeOutError:
 			w.WriteHeader(http.StatusRequestTimeout)
 			w.Write([]byte("StatusRequestTimeout 408..."))
@@ -106,20 +101,19 @@ func (a *App) registerSteps(w http.ResponseWriter, req *http.Request) {
 		}
 	} else {
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(outputStep{resp.Name, resp.Steps})
+		json.NewEncoder(w).Encode(outputStep{Name, s})
 	}
 }
 
 func (a *App) getStepper(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
-	r := newRequest()
-	r.Name = params["person"]
-	a.GetWalker(r)
-	resp := <-r.resp
 
-	if resp.Error != nil {
-		println(r.Error.Error())
-		switch resp.Error.(type) {
+	Name := params["person"]
+	s, e := a.pedometers.GetWalker(Name)
+
+	if e != nil {
+		println(e.Error())
+		switch e.(type) {
 		case *TimeOutError:
 			w.WriteHeader(http.StatusRequestTimeout)
 			w.Write([]byte("StatusRequestTimeout 408..."))
@@ -135,42 +129,25 @@ func (a *App) getStepper(w http.ResponseWriter, req *http.Request) {
 		}
 	} else {
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(outputStep{resp.Name, resp.Steps})
+		json.NewEncoder(w).Encode(outputStep{Name, s})
 	}
 }
 
 func (a *App) getAllSteppers(w http.ResponseWriter, req *http.Request) {
-
-	r := newRequest()
-	a.ListAll(r)
-	resp := <-r.resp
-
-	if resp.Error != nil {
-		println(r.Error.Error())
-		switch resp.Error.(type) {
-		case *TimeOutError:
-			w.WriteHeader(http.StatusRequestTimeout)
-			w.Write([]byte("StatusRequestTimeout 408..."))
-		default:
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte("StatusInternalServerError 500..."))
-		}
-	} else {
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(resp.Result)
-	}
+	allSteppers := a.pedometers.ListAllSteppers()
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(allSteppers)
 }
+
 
 func (a *App) newGroup(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
-	r := newRequest()
-	r.Group = params["name"]
-	a.AddGroup(r)
-	resp := <-r.resp
+	Group := params["name"]
+	e := a.pedometers.AddGroup(Group)
 
-	if resp.Error != nil {
-		println(r.Error.Error())
-		switch resp.Error.(type) {
+	if e  != nil {
+		println(e.Error())
+		switch e.(type) {
 		case *TimeOutError:
 			w.WriteHeader(http.StatusRequestTimeout)
 			w.Write([]byte("StatusRequestTimeout 408..."))
@@ -189,23 +166,23 @@ func (a *App) newGroup(w http.ResponseWriter, req *http.Request) {
 		}
 	} else {
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(outputGroup{resp.Group, resp.Steps, resp.Result})
+		json.NewEncoder(w).Encode(outputGroup{Group, 0, nil})
 	}
 }
 
 func (a *App) extendGroup(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 
-	r := newRequest()
-	r.Group = params["group"]
-	r.Name = params["person"]
 
-	a.AddWalkerToGroup(r)
-	resp := <-r.resp
+	Group := params["group"]
+	Name := params["person"]
 
-	if resp.Error != nil {
-		println(r.Error.Error())
-		switch resp.Error.(type) {
+	e := a.pedometers.AddWalkerToGroup(Name,Group)
+
+
+	if e != nil {
+		println(e.Error())
+		switch e.(type) {
 		case *TimeOutError:
 			w.WriteHeader(http.StatusRequestTimeout)
 			w.Write([]byte("StatusRequestTimeout 408..."))
@@ -227,20 +204,20 @@ func (a *App) extendGroup(w http.ResponseWriter, req *http.Request) {
 		}
 	} else {
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(outputStep{resp.Name, resp.Steps})
+		json.NewEncoder(w).Encode(outputStep{Name, Group})
 	}
 }
 
 func (a *App) getGroup(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
-	r := newRequest()
-	r.Group = params["name"]
-	a.ListGroup(r)
-	resp := <-r.resp
 
-	if resp.Error != nil {
-		println(r.Error.Error())
-		switch resp.Error.(type) {
+	Group := params["name"]
+	aGroup,e := a.pedometers.ListGroup(Group)
+
+
+	if e  != nil {
+		println(e.Error())
+		switch e.(type) {
 		case *TimeOutError:
 			w.WriteHeader(http.StatusRequestTimeout)
 			w.Write([]byte("StatusRequestTimeout 408..."))
@@ -256,19 +233,17 @@ func (a *App) getGroup(w http.ResponseWriter, req *http.Request) {
 		}
 	} else {
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(outputGroup{resp.Group, resp.Steps, resp.Result})
+		json.NewEncoder(w).Encode(outputGroupMembers{Group, aGroup["TOTAL"], aGroup})
 	}
 }
 
 func (a *App) getAll(w http.ResponseWriter, req *http.Request) {
+	
+	allGroups,e := a.pedometers.ListAllGroups()
 
-	r := newRequest()
-	a.processListAllGroups(r)
-	resp := <-r.resp
-
-	if resp.Error != nil {
-		println(r.Error.Error())
-		switch resp.Error.(type) {
+	if e  != nil {
+		println(e.Error())
+		switch e.(type) {
 		case *TimeOutError:
 			println("getAll, timeout...")
 			w.WriteHeader(http.StatusRequestTimeout)
@@ -279,6 +254,6 @@ func (a *App) getAll(w http.ResponseWriter, req *http.Request) {
 		}
 	} else {
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(resp.Results)
+		json.NewEncoder(w).Encode(allGroups)
 	}
 }

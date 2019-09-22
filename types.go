@@ -2,24 +2,19 @@ package main
 
 import (
 	"github.com/gorilla/mux"
+	"sync"
 )
 
-type leaderboard map[string]int
-type groups map[string]map[string]bool
+
 
 type pedometers struct {
 	name string
-	leaderboard
-	groups
-	leaderBoardCmd         chan *request
-	leaderBoardCmdInternal chan *request // internal loop
-	groupsCmd              chan *request
-	groupsCmdInternal      chan *request // internal loop
+	leaderboard sync.Map
+	groups sync.Map
 	config                 *config
 }
 
 type config struct {
-	MAXQUEUELENGTH    int
 	MAXITERATIONLIMIT int // concurrent request to API server
 	// always good to put a bound on datastructures...
 	MAXNUMBEROFSTEPSINPUT     int
@@ -42,11 +37,17 @@ type outputStep struct {
 	Name  string `json:"name"`
 	Steps int    `json:"Steps"`
 }
-
 type outputGroup struct {
+	Name  string `json:"name"`
+	Group string    `json:"group"`
+}
+
+
+
+type outputGroupMembers struct {
 	Name    string      `json:"name"`
 	Steps   int         `json:"Steps"`
-	Members leaderboard `json:"members"`
+	Members map[string]int `json:"members"`
 }
 
 type source int

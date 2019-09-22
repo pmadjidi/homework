@@ -22,7 +22,7 @@ import (
 
 func readIntFromEnv(name string) (int) {
 	var result int
-	MAXQUEUELENGTH := 100000
+
 	MAXITERATIONLIMIT := 1000
 
 	MAXNUMBEROFSTEPSINPUT := 1000
@@ -35,12 +35,6 @@ func readIntFromEnv(name string) (int) {
 	iEnv, err := strconv.Atoi(fromEnv)
 
 	switch name {
-	case "MAXQUEUELENGTH":
-		if err != nil {
-			result = MAXQUEUELENGTH
-		} else {
-			result = iEnv
-		}
 	case "MAXITERATIONLIMIT":
 		if err != nil {
 			result = MAXITERATIONLIMIT
@@ -83,7 +77,6 @@ func readIntFromEnv(name string) (int) {
 
 func readConfig() *config {
 	return &config{
-		readIntFromEnv("MAXQUEUELENGTH"),
 		readIntFromEnv("MAXITERATIONLIMIT"),
 		readIntFromEnv("MAXNUMBEROFSTEPSINPUT"),
 		readIntFromEnv("MAXNUMBERSOFWALKERS"),

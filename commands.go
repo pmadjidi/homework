@@ -1,141 +1,172 @@
 package main
 
-const (
-	NOP command = iota
-	ADDWALKER
-	REGISTERSTEPS
-	GETWALKER
-	ADDGROUP
-	ADDWALKERTOGROUP
-	DELETEWALKER
-	RESETSTEPS
-	LISTGROUP
-	LISTALL
-	LISTALLGROUPS
-	SCAN
+import (
+	"sync"
+	"sync/atomic"
 )
 
-func (c command) String() string {
-	return [...]string{
-		"NOP",
-		"ADDWALKER",
-		"REGISTERSTEPS",
-		"GETWALKER",
-		"ADDGROUP",
-		"ADDWALKERTOGROUP",
-		"DELETEWALKER",
-		"RESETSTEPS",
-		"LISTGROUP",
-		"LISTALL",
-		"LISTALLGROUPS",
-		"SCAN",
-	}[c]
-}
 
-func (p *pedometers) AddWalker(req *request) {
-	req.Cmd = ADDWALKER
-	if req.Name == EMPTYSTRING {
-		req.Error = &InvalidNameError{}
-		req.resp <- req
-		close(req.resp)
+func (p *pedometers) AddWalker(name string) error {
+	var err error = nil
+	var steps int32
+	if name == EMPTYSTRING {
+		return &InvalidNameError{}
 	} else {
-		p.execLeadBoardCmd(req)
+		_, ok := p.leaderboard.Load(name)
+		if ok {
+			err = &NameExistsError{}
+		} else {
+			steps = 0
+			p.leaderboard.Store(name, &steps)
+		}
+		return err
 	}
 }
 
-func (p *pedometers) GetWalker(req *request) {
-	req.Cmd = GETWALKER
-	if req.Name == EMPTYSTRING {
-		req.Error = &InvalidNameError{}
-		req.resp <- req
-		close(req.resp)
+func (p *pedometers) GetWalker(name string) (steps int, err error) {
+	steps = -1
+	err = nil
+	var stepPointer *int = nil
+	if name == EMPTYSTRING {
+		err = &InvalidNameError{}
 	} else {
-		p.execLeadBoardCmd(req)
+		val, ok := p.leaderboard.Load(name)
+		if !ok {
+			err = &NameDoesNotExistsError{}
+		} else {
+			stepPointer = val.(*int)
+			steps = *stepPointer
+		}
+	}
+	return
+}
+
+func (p *pedometers) RegisterSteps(name string, incSteps int32) (steps int, err error) {
+	steps = -1
+	err = nil
+	var stepPointer *int32 = nil
+	if name == EMPTYSTRING {
+		err = &InvalidNameError{}
+	} else if incSteps <= 0 {
+		err = &NegativeStepCounterOrZeroError{}
+	} else if incSteps >= int32(p.config.MAXNUMBEROFSTEPSINPUT) {
+		err = &StepInputOverFlowError{}
+	} else {
+		val, ok := p.leaderboard.Load(name)
+		if !ok {
+			err = &NameDoesNotExistsError{}
+		} else {
+			stepPointer = val.(*int32)
+			atomic.AddInt32(stepPointer, incSteps)
+		}
+	}
+	return
+}
+
+
+func (p *pedometers) AddGroup(name string) error {
+	var err error = nil
+	if name == EMPTYSTRING {
+		return &InvalidNameError{}
+	} else {
+		_, ok := p.groups.Load(name)
+		if ok {
+			err = &NameExistsError{}
+		} else {
+			var aGroup sync.Map
+			p.groups.Store(name, &aGroup)
+		}
+		return err
 	}
 }
 
-func (p *pedometers) RegisterSteps(req *request) {
-	req.Cmd = REGISTERSTEPS
-	if req.Name == EMPTYSTRING {
-		req.Error = &InvalidNameError{}
-		req.resp <- req
-		close(req.resp)
-	} else if req.Steps <= 0 {
-		req.Error = &NegativeStepCounterOrZeroError{}
-		req.resp <- req
-		close(req.resp)
-	} else if req.Steps >= p.config.MAXNUMBEROFSTEPSINPUT {
-		req.Error = &StepInputOverFlowError{}
-		req.resp <- req
-		close(req.resp)
+func (p *pedometers) getGroup(name string) (*sync.Map,error) {
+	var err error = nil
+	var group *sync.Map = nil
+	if name == EMPTYSTRING {
+		err = &InvalidNameError{}
 	} else {
-		p.execLeadBoardCmd(req)
+		aGroup , ok := p.groups.Load(name)
+		if !ok {
+			err = &NameDoesNotExistsError{}
+		} else {
+			group = aGroup.(*sync.Map)
+		}
 	}
+	return group,err
 }
 
-func (p *pedometers) AddGroup(req *request) {
-	req.Cmd = ADDGROUP
-	if req.Group == EMPTYSTRING {
-		req.Error = &InvalidGroupNameError{}
-		req.resp <- req
-		close(req.resp)
-	} else {
-		p.execGroupCmd(req)
+func (p *pedometers) AddWalkerToGroup(name,group string) error {
+	var err error = nil
+	if name  == EMPTYSTRING {
+		err = &InvalidNameError{}
+	} else if group == EMPTYSTRING {
+		err = &InvalidGroupNameError{}
+	} else if _, err = p.GetWalker(name); err.Error() == "NAME_MISSING"{
+			err =&NameDoesNotExistsError{}
+	} else if agroup, err := p.getGroup(group); err == nil {
+		agroup.Store(name,true )
 	}
-}
-
-func (p *pedometers) AddWalkerToGroup(req *request) {
-	req.Cmd = ADDWALKERTOGROUP
-	if req.Name == EMPTYSTRING {
-		req.Error = &InvalidNameError{}
-		req.resp <- req
-		close(req.resp)
-	} else if req.Group == EMPTYSTRING {
-		req.Error = &InvalidGroupNameError{}
-		req.resp <- req
-		close(req.resp)
-	} else {
-		p.execGroupCmd(req)
-	}
-
+	return err
 }
 
 //not implemented yet
-func (p *pedometers) DeleteWalker(req *request) {
-	req.Cmd = DELETEWALKER
-	req.Error = &NotImplementedError{}
-	req.resp <- req
-	close(req.resp)
+func (p *pedometers) DeleteWalker(name string)error {
+	return &NotImplementedError{}
+
 }
 
-func (p *pedometers) ResetSteps(req *request) {
-	req.Cmd = RESETSTEPS
-	if req.Name == EMPTYSTRING {
-		req.Error = &InvalidNameError{}
-		req.resp <- req
-		close(req.resp)
+func (p *pedometers) ResetSteps(name string) error {
+	return &NotImplementedError{}
+}
+
+func (p *pedometers) ListGroup(group string) (map[string]int,error) {
+	var ERR error = nil
+	var foundGroup = make(map[string]int)
+	foundGroup["TOTAL"] = 0
+	if group  == EMPTYSTRING {
+		ERR  = &InvalidGroupNameError{}
 	} else {
-		p.execLeadBoardCmd(req)
+		aGroup,err := p.getGroup(group)
+		if err != nil {
+			ERR = err
+		} else {
+			aGroup.Range(func(k,v interface{}) bool {
+				key := k.(string)
+				val := *v.(*int)
+				foundGroup[key] = val
+				foundGroup["TOTAL"] += val
+				return true
+			})
+		}
 	}
+	return foundGroup,ERR
 }
 
-func (p *pedometers) ListGroup(req *request) {
-	req.Cmd = LISTGROUP
-	if req.Group == EMPTYSTRING {
-		req.Error = &InvalidGroupNameError{}
-		req.resp <- req
-		close(req.resp)
-	} else {
-		p.execGroupCmd(req)
-	}
+func (p *pedometers) ListAllSteppers() map[string]int {
+	var AllSteppers = make(map[string]int)
+	p.leaderboard.Range(func(k,v interface{}) bool {
+		key := k.(string)
+		val := *v.(*int)
+		AllSteppers[key] = val
+		return true
+	})
+	return AllSteppers
 }
 
-func (p *pedometers) ListAll(req *request) {
-	req.Cmd = LISTALL
-	p.execLeadBoardCmd(req)
-}
+func (p *pedometers) ListAllGroups() (map[string]map[string]int,error) {
+	var err error = nil
+	AllGroups := make(map[string]map[string]int)
+	p.groups.Range(func(k,v interface{}) bool {
+		aGroup,e  := p.ListGroup(k.(string))
+		if e != nil {
+			err = e
+			return false
+		}
+		AllGroups[k.(string)] = aGroup
+		return true
+	})
 
-func (p *pedometers) scan(req *request) {
-	req.Cmd = SCAN
-	p.execLeadBoardCmd(req)
+	return AllGroups,err
+
 }
