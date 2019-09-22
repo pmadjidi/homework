@@ -4,23 +4,10 @@ import (
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
 	"net/http"
-	"runtime"
 	"testing"
 )
 
 func TestRestAPI(t *testing.T) {
-
-	runtime.GOMAXPROCS(runtime.NumCPU())
-	var quit = make(chan bool)
-
-	go func() {
-		APP = newApp("Apsis Homework")
-		APP.start()
-		<-quit
-		APP.shutdown()
-	}()
-
-	defer close(quit)
 
 	resp, err := http.Get("http://localhost:8080/add/step/payam")
 	if err == nil {
@@ -44,7 +31,7 @@ func TestRestAPI(t *testing.T) {
 	if err != nil {
 		t.Fail()
 	} else {
-		var result outputGroup
+		var result outputGroupMembers
 		json.NewDecoder(resp1.Body).Decode(&result)
 		assert.Equal(t, result.Name, "t1")
 		assert.Equal(t, result.Steps, 0)
@@ -89,7 +76,7 @@ func TestRestAPI(t *testing.T) {
 	if err != nil {
 		t.Fail()
 	} else {
-		var result outputGroup
+		var result outputGroupMembers
 		json.NewDecoder(resp4.Body).Decode(&result)
 		assert.Equal(t, result.Name, "t1")
 		assert.Equal(t, result.Steps, 10)
@@ -106,7 +93,7 @@ func TestRestAPI(t *testing.T) {
 	if err != nil {
 		t.Fail()
 	} else {
-		var result outputGroup
+		var result outputGroupMembers
 		json.NewDecoder(resp5.Body).Decode(&result)
 		assert.Equal(t, result.Name, "t2")
 		assert.Equal(t, result.Steps, 0)

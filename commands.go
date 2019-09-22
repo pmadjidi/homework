@@ -102,7 +102,7 @@ func (p *pedometers) AddWalkerToGroup(name,group string) error {
 		err = &InvalidNameError{}
 	} else if group == EMPTYSTRING {
 		err = &InvalidGroupNameError{}
-	} else if _, err = p.GetWalker(name); err.Error() == "NAME_MISSING"{
+	} else if _, err = p.GetWalker(name); err != nil && err.Error() == "NAME_MISSING"{
 			err =&NameDoesNotExistsError{}
 	} else if agroup, err := p.getGroup(group); err == nil {
 		agroup.Store(name,true )
@@ -130,12 +130,18 @@ func (p *pedometers) ListGroup(group string) (map[string]int,error) {
 		aGroup,err := p.getGroup(group)
 		if err != nil {
 			ERR = err
+			println("ListGroup Error")
 		} else {
 			aGroup.Range(func(k,v interface{}) bool {
 				key := k.(string)
-				val := *v.(*int)
-				foundGroup[key] = val
-				foundGroup["TOTAL"] += val
+				steps, e := p.GetWalker(key)
+				if e != nil {
+					ERR = e
+					return false
+				} else {
+					foundGroup[key] = steps
+					foundGroup["TOTAL"] += steps
+				}
 				return true
 			})
 		}
