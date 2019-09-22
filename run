@@ -1,1 +1,1 @@
-docker run -d -p 8080:8080 homework
+docker run -d -p 8050:8050 homework

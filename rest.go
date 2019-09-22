@@ -28,13 +28,13 @@ func (a *App) configureRoutes() {
 
 func (a *App) startWebServer() {
 	go func () {
-		log.Fatal(http.ListenAndServe(":8080", a.Router))
+		log.Fatal(http.ListenAndServe(":8050", a.Router))
 		<- a.quit
 	}()
 }
 
 func (a *App) hello(w http.ResponseWriter, req *http.Request) {
-	json.NewEncoder(w).Encode("homework....")
+	json.NewEncoder(w).Encode("sync.Map homework....")
 }
 
 func (a *App) newStepper(w http.ResponseWriter, req *http.Request) {
