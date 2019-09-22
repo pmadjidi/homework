@@ -1,1 +1,1 @@
- docker build -t homework-syncMap .
+ docker build -t homework-syncmap .
