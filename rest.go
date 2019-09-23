@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	_ "net/http/pprof"
 )
 
 func (a *App) configureRoutes() {
@@ -23,6 +24,7 @@ func (a *App) configureRoutes() {
 	a.Router.HandleFunc("/extend/{group}/{person}", a.extendGroup).Methods("GET")
 	a.Router.HandleFunc("/get/group/{name}", a.getGroup).Methods("GET")
 	a.Router.HandleFunc("/get/allgroups", a.getAll).Methods("GET")
+	a.PathPrefix("/debug/pprof/").Handler(http.DefaultServeMux)
 
 }
 
