@@ -19,12 +19,6 @@ Range check on all applications parameters should be implemented
 
 
 
-Some performance data is gathered, please refer to perfdata.txt
-API hosted on http://payam.ite.kth.se:8080
-for the distributed version please refer to  http://payam.ite.kth.se:8090
-for the syncMap version please refer to http://payam.ite.kth.se:8050
-
-
 To run locally:
 
 checkout the branch master,sharded_map or syncMap
