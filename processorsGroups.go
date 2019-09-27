@@ -32,7 +32,7 @@ func (p *pedometers) processGetGroup(req *request) {
 			go func(name string) {
 				newreq := newRequestInternal()
 				newreq.Name = name
-				APP.GetWalker(newreq)
+				APP.GetUser(newreq)
 				responseFromOthers <- newreq.resp
 				wg.Done()
 			}(k)
@@ -46,8 +46,8 @@ func (p *pedometers) processGetGroup(req *request) {
 		for resp := range responseFromOthers {
 			r := <-resp
 			if r.Error == nil {
-				req.Result[r.Name] = r.Steps
-				req.Steps += r.Steps
+				req.Result[r.Name] = r.Points
+				req.Points += r.Points
 			} else {
 				req.Error = r.Error
 				req.resp <- req
@@ -69,11 +69,11 @@ func (p *pedometers) processListGroupForShards(req *request) {
 		for aPerson, _ := range aGroup {
 			newRequest := newRequestInternal()
 			newRequest.Name = aPerson
-			APP.GetWalker(newRequest)
+			APP.GetUser(newRequest)
 			newResp := <-newRequest.resp
 			if newResp.Error == nil {
-				groupReplica [aPerson] = newResp.Steps
-				groupReplica["SUM"] += newResp.Steps
+				groupReplica [aPerson] = newResp.Points
+				groupReplica["SUM"] += newResp.Points
 			} else {
 				req.Error = newResp.Error
 				req.resp <- req
@@ -90,7 +90,7 @@ func (p *pedometers) processListGroupForShards(req *request) {
 	close(req.resp)
 }
 
-func (p *pedometers) processListAllGroups(req *request) {
+func (p *pedometers) processListGroups(req *request) {
 	req.Results = make(map[string]leaderboard)
 
 	for shard := 0; shard < p.config.SHARDS; shard++ {
@@ -119,11 +119,11 @@ func (p *pedometers) processListAllGroups(req *request) {
 		for aPerson, _ := range aGroup {
 			newRequest := newRequestInternal()
 			newRequest.Name = aPerson
-			APP.GetWalker(newRequest)
+			APP.GetUser(newRequest)
 			newResp := <-newRequest.resp
 			if newResp.Error == nil {
-				groupReplica [aPerson] = newResp.Steps
-				groupTotal += newResp.Steps
+				groupReplica [aPerson] = newResp.Points
+				groupTotal += newResp.Points
 			} else {
 				req.Error = newResp.Error
 				req.resp <- req

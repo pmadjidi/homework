@@ -40,7 +40,7 @@ func (a *App) execLeadBoardCmd(req *request) {
 	if req.index >= 0 {
 		index = req.index
 	} else {
-		a.steperHash(req)
+		a.userHash(req)
 		index = hextoint(req.Hash[0:a.config.HASHBITSTOSHARD])
 		req.index = index
 		println(req.Cmd.String()," To Node: ",req.index)

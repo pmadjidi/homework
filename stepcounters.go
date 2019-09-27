@@ -70,28 +70,26 @@ func (p *pedometers) startPedometers(quit chan bool) {
 
 func (p *pedometers) dispatchCommand(req *request) {
 	switch req.Cmd {
-	case ADDWALKER:
-		p.processAddWalker(req)
-	case REGISTERSTEPS:
-		p.processRegisterSteps(req)
-	case ADDWALKERTOGROUP:
-		p.processAddWalkerToGroup(req)
-	case DELETEWALKER:
-		p.processDeleteWalker(req)
-	case GETWALKER:
-		p.processGetWalker(req)
-	case RESETSTEPS:
-		p.processResetSteps(req)
-	case LISTWALKERS:
-		p.processListWalkers(req)
-	case LISTALLWALKERS:
-		p.processListAllWalkers(req)
+	case ADDUSER:
+		p.processAddUser(req)
+	case GETUSER:
+		p.processGetUser(req)
+	case DELETEUSER:
+		p.processDeleteUser(req)
+	case ADDUSERTOGROUP:
+		p.processAddUserToGroup(req)
+	case REGISTERPOINTS:
+		p.processRegisterPoints(req)
+	case RESETPOINTS:
+		p.processResetPoints(req)
+	case LISTUSERS:
+		p.processListUsers(req)
 	case ADDGROUP:
 		p.processAddGroup(req)
 	case GETGROUP:
 		p.processGetGroup(req)
-	case LISTALLGROUPS:
-		p.processListAllGroups(req)
+	case LISTGROUPS:
+		p.processListGroups(req)
 	case LISTGROUPSFORASHARD:
 		p.processListGroupForShards(req)
 	default:

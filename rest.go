@@ -15,16 +15,16 @@ func (a *App) configureRoutes() {
 	// real life should be post and put
 
 	a.Router.HandleFunc("/", a.hello).Methods("GET")
-	a.Router.HandleFunc("/add/step/{person}", a.newStepper).Methods("GET")
-	a.Router.HandleFunc("/inc/{person}/{steps}", a.registerSteps).Methods("GET")
-	a.Router.HandleFunc("/get/step/{person}", a.getStepper).Methods("GET")
-	a.Router.HandleFunc("/get/allsteps", a.getAllSteppers).Methods("GET")
+	a.Router.HandleFunc("/add/user/{user}", a.newUser).Methods("GET")
+	a.Router.HandleFunc("/inc/{user}/{points}", a.registerPoints).Methods("GET")
+	a.Router.HandleFunc("/get/user/{user}", a.getUser).Methods("GET")
+	a.Router.HandleFunc("/get/users", a.getUsers).Methods("GET")
 
-	a.Router.HandleFunc("/add/group/{name}", a.newGroup).Methods("GET")
-	a.Router.HandleFunc("/extend/{group}/{person}", a.extendGroup).Methods("GET")
+	a.Router.HandleFunc("/add/group/{group}", a.newGroup).Methods("GET")
+	a.Router.HandleFunc("/extend/{group}/{user}", a.extendGroup).Methods("GET")
 	a.Router.HandleFunc("/get/group/{name}", a.getGroup).Methods("GET")
-	a.Router.HandleFunc("/get/allgroups", a.getAll).Methods("GET")
-	a.Router.HandleFunc("/get/shard/{index}", a.listNodeGroup).Methods("GET")
+	a.Router.HandleFunc("/get/groups", a.getGroups).Methods("GET")
+	a.Router.HandleFunc("/get/shard/{index}", a.listShardGroups).Methods("GET")
 	a.PathPrefix("/debug/pprof/").Handler(http.DefaultServeMux)
 
 }
@@ -39,11 +39,11 @@ func (a *App) hello(w http.ResponseWriter, req *http.Request) {
 	json.NewEncoder(w).Encode("homework distributed....")
 }
 
-func (a *App) newStepper(w http.ResponseWriter, req *http.Request) {
+func (a *App) newUser(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 	r := newRequest()
-	r.Name = params["person"]
-	a.AddWalker(r)
+	r.Name = params["user"]
+	a.AddUser(r)
 	resp := <-r.resp
 
 	if resp.Error != nil {
@@ -67,14 +67,14 @@ func (a *App) newStepper(w http.ResponseWriter, req *http.Request) {
 		}
 	} else {
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(outputStep{resp.Name, resp.Steps})
+		json.NewEncoder(w).Encode(outputStep{resp.Name, resp.Points})
 	}
 }
 
-func (a *App) registerSteps(w http.ResponseWriter, req *http.Request) {
+func (a *App) registerPoints(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 
-	steps, err := strconv.Atoi(params["steps"])
+	points, err := strconv.Atoi(params["points"])
 
 	if err != nil {
 		println(err.Error())
@@ -84,10 +84,10 @@ func (a *App) registerSteps(w http.ResponseWriter, req *http.Request) {
 	}
 
 	r := newRequest()
-	r.Name = params["person"]
-	r.Steps = steps
+	r.Name = params["user"]
+	r.Points = points
 
-	a.RegisterSteps(r)
+	a.RegisterPoints(r)
 	resp := <-r.resp
 
 	if resp.Error != nil {
@@ -111,15 +111,15 @@ func (a *App) registerSteps(w http.ResponseWriter, req *http.Request) {
 		}
 	} else {
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(outputStep{resp.Name, resp.Steps})
+		json.NewEncoder(w).Encode(outputStep{resp.Name, resp.Points})
 	}
 }
 
-func (a *App) getStepper(w http.ResponseWriter, req *http.Request) {
+func (a *App) getUser(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 	r := newRequest()
-	r.Name = params["person"]
-	a.GetWalker(r)
+	r.Name = params["user"]
+	a.GetUser(r)
 	resp := <-r.resp
 
 	if resp.Error != nil {
@@ -140,14 +140,14 @@ func (a *App) getStepper(w http.ResponseWriter, req *http.Request) {
 		}
 	} else {
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(outputStep{resp.Name, resp.Steps})
+		json.NewEncoder(w).Encode(outputStep{resp.Name, resp.Points})
 	}
 }
 
-func (a *App) getAllSteppers(w http.ResponseWriter, req *http.Request) {
+func (a *App) getUsers(w http.ResponseWriter, req *http.Request) {
 
 	r := newRequest()
-	a.ListAll(r)
+	a.ListUsers(r)
 	resp := <-r.resp
 
 	if resp.Error != nil {
@@ -169,7 +169,7 @@ func (a *App) getAllSteppers(w http.ResponseWriter, req *http.Request) {
 func (a *App) newGroup(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 	r := newRequest()
-	r.Group = params["name"]
+	r.Group = params["group"]
 	a.AddGroup(r)
 	resp := <-r.resp
 
@@ -194,7 +194,7 @@ func (a *App) newGroup(w http.ResponseWriter, req *http.Request) {
 		}
 	} else {
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(outputGroup{resp.Group, resp.Steps, resp.Result})
+		json.NewEncoder(w).Encode(outputGroup{resp.Group, resp.Points, resp.Result})
 	}
 }
 
@@ -203,7 +203,7 @@ func (a *App) extendGroup(w http.ResponseWriter, req *http.Request) {
 
 	r := newRequest()
 	r.Group = params["group"]
-	r.Name = params["person"]
+	r.Name = params["user"]
 
 	a.AddWalkerToGroup(r)
 	resp := <-r.resp
@@ -232,14 +232,14 @@ func (a *App) extendGroup(w http.ResponseWriter, req *http.Request) {
 		}
 	} else {
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(outputStep{resp.Name, resp.Steps})
+		json.NewEncoder(w).Encode(outputStep{resp.Name, resp.Points})
 	}
 }
 
 func (a *App) getGroup(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 	r := newRequest()
-	r.Group = params["name"]
+	r.Group = params["user"]
 	a.GetGroup(r)
 	resp := <-r.resp
 
@@ -261,11 +261,11 @@ func (a *App) getGroup(w http.ResponseWriter, req *http.Request) {
 		}
 	} else {
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(outputGroup{resp.Group, resp.Steps, resp.Result})
+		json.NewEncoder(w).Encode(outputGroup{resp.Group, resp.Points, resp.Result})
 		}
 }
 
-func (a *App) listNodeGroup(w http.ResponseWriter, req *http.Request) {
+func (a *App) listShardGroups(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 	r := newRequest()
 	index, err := strconv.Atoi(params["index"])
@@ -303,10 +303,10 @@ func (a *App) listNodeGroup(w http.ResponseWriter, req *http.Request) {
 }
 
 
-func (a *App) getAll(w http.ResponseWriter, req *http.Request) {
+func (a *App) getGroups(w http.ResponseWriter, req *http.Request) {
 
 	r := newRequest()
-	a.ListAllGroups(r)
+	a.ListGroups(r)
 	resp := <-r.resp
 
 	if resp.Error != nil {

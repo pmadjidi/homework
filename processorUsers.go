@@ -4,7 +4,7 @@ import (
 	"sync"
 )
 
-func (p *pedometers) processAddWalker(req *request) {
+func (p *pedometers) processAddUser(req *request) {
 
 	_, found := p.leaderboard[req.Name]
 	if found {
@@ -18,31 +18,31 @@ func (p *pedometers) processAddWalker(req *request) {
 	close(req.resp)
 }
 
-func (p *pedometers) processGetWalker(req *request) {
+func (p *pedometers) processGetUser(req *request) {
 	steps, found := p.leaderboard[req.Name]
 	if !found {
 		req.Error = &NameDoesNotExistsError{}
 	} else {
-		req.Steps = steps
+		req.Points = steps
 	}
 	req.resp <- req
 	close(req.resp)
 }
 
-func (p *pedometers) processRegisterSteps(req *request) {
+func (p *pedometers) processRegisterPoints(req *request) {
 	_, found := p.leaderboard[req.Name]
 	if !found {
 		req.Error = &NameDoesNotExistsError{}
 	} else {
-		p.leaderboard[req.Name] += req.Steps
-		req.Steps = p.leaderboard[req.Name]
+		p.leaderboard[req.Name] += req.Points
+		req.Points = p.leaderboard[req.Name]
 	}
 	req.resp <- req
 	close(req.resp)
 }
 
 
-func (p *pedometers) processAddWalkerToGroup(req *request) {
+func (p *pedometers) processAddUserToGroup(req *request) {
 	_, groupfound := p.groups[req.Group]
 
 	if !groupfound {
@@ -51,13 +51,13 @@ func (p *pedometers) processAddWalkerToGroup(req *request) {
 
 		newReq := newRequestInternal()
 		newReq.Name = req.Name
-		APP.GetWalker(newReq)
+		APP.GetUser(newReq)
 		newResp := <-newReq.resp
 		if newResp.Error != nil {
 			req.Error = newResp.Error
 		} else {
 			p.groups[req.Group][req.Name] = 1
-			req.Steps = newResp.Steps
+			req.Points = newResp.Points
 		}
 	}
 	req.resp <- req
@@ -65,13 +65,13 @@ func (p *pedometers) processAddWalkerToGroup(req *request) {
 }
 
 //not implemented yet...
-func (p *pedometers) processDeleteWalker(req *request) {
+func (p *pedometers) processDeleteUser(req *request) {
 	req.Error = &NotImplementedError{}
 	req.resp <- req
 	close(req.resp)
 }
 
-func (p *pedometers) processResetSteps(req *request) {
+func (p *pedometers) processResetPoints(req *request) {
 	_, found := p.leaderboard[req.Name]
 	if !found {
 		req.Error = &NameDoesNotExistsError{}
@@ -82,7 +82,7 @@ func (p *pedometers) processResetSteps(req *request) {
 	close(req.resp)
 }
 
-func (p *pedometers) processListAllWalkers(req *request) {
+func (p *pedometers) processListUsers(req *request) {
 
 	req.Result = make(leaderboard)
 	var wg sync.WaitGroup
@@ -93,7 +93,7 @@ func (p *pedometers) processListAllWalkers(req *request) {
 			go func(index int) {
 				newreq := newRequestInternal()
 				newreq.index = index
-				APP.ListWalkers(newreq)
+				APP.ListUsers(newreq)
 				responseFromOthers <- newreq.resp
 				wg.Done()
 			}(shard)
@@ -111,7 +111,7 @@ func (p *pedometers) processListAllWalkers(req *request) {
 			for k, v := range r.Result {
 				req.Result[k] = v
 			}
-			req.Steps += r.Steps
+			req.Points += r.Points
 
 		} else {
 			req.Error = r.Error
@@ -129,12 +129,12 @@ func (p *pedometers) processListAllWalkers(req *request) {
 	close(req.resp)
 }
 
-func (p *pedometers) processListWalkers(req *request) {
+func (p *pedometers) processListUsersForShard(req *request) {
 	req.Result = make(leaderboard)
-	req.Steps = 0
+	req.Points = 0
 	for k, v := range p.leaderboard {
 		req.Result[k] = v
-		req.Steps += v
+		req.Points += v
 	}
 
 	req.resp <- req

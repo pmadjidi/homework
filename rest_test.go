@@ -43,7 +43,7 @@ func TestMain(m *testing.M) {
 
 func TestRestAPI(t *testing.T) {
 
-	resp, err := http.Get("http://localhost:8090/add/step/payam")
+	resp, err := http.Get("http://localhost:8090/add/user/payam")
 	if err == nil {
 		defer resp.Body.Close()
 	}
@@ -54,7 +54,7 @@ func TestRestAPI(t *testing.T) {
 		var result outputStep
 		json.NewDecoder(resp.Body).Decode(&result)
 		assert.Equal(t,result.Name, "payam")
-		assert.Equal(t, result.Steps, 0)
+		assert.Equal(t, result.Points, 0)
 	}
 
 	resp1, err := http.Get("http://localhost:8090/add/group/t1")
@@ -69,7 +69,7 @@ func TestRestAPI(t *testing.T) {
 		var result outputGroup
 		json.NewDecoder(resp1.Body).Decode(&result)
 		assert.Equal(t, result.Name, "t1")
-		assert.Equal(t, result.Steps, 0)
+		assert.Equal(t, result.Points, 0)
 
 	}
 
@@ -84,7 +84,7 @@ func TestRestAPI(t *testing.T) {
 		var result outputStep
 		json.NewDecoder(resp2.Body).Decode(&result)
 		assert.Equal(t, result.Name, "payam")
-		assert.Equal(t, result.Steps, 0)
+		assert.Equal(t, result.Points, 0)
 	}
 
 	resp3, err := http.Get("http://localhost:8090/inc/payam/10")
@@ -99,7 +99,7 @@ func TestRestAPI(t *testing.T) {
 		var result outputStep
 		json.NewDecoder(resp3.Body).Decode(&result)
 		assert.Equal(t, result.Name, "payam")
-		assert.Equal(t, result.Steps, 10)
+		assert.Equal(t, result.Points, 10)
 	}
 
 	resp4, err := http.Get("http://localhost:8090/get/group/t1")
@@ -113,7 +113,7 @@ func TestRestAPI(t *testing.T) {
 		var result outputGroup
 		json.NewDecoder(resp4.Body).Decode(&result)
 		assert.Equal(t, result.Name, "t1")
-		assert.Equal(t, result.Steps, 10)
+		assert.Equal(t, result.Points, 10)
 		assert.Equal(t, result.Members["payam"], 10)
 	}
 
@@ -128,11 +128,11 @@ func TestRestAPI(t *testing.T) {
 		var result outputGroup
 		json.NewDecoder(resp5.Body).Decode(&result)
 		assert.Equal(t, result.Name, "t2")
-		assert.Equal(t, result.Steps, 0)
+		assert.Equal(t, result.Points, 0)
 	}
 
 
-	resp6, err := http.Get("http://localhost:8090/get/allgroups")
+	resp6, err := http.Get("http://localhost:8090/get/groups")
 	if err == nil {
 		defer resp5.Body.Close()
 	}

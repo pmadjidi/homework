@@ -49,12 +49,12 @@ type command int
 
 type outputStep struct {
 	Name  string `json:"name"`
-	Steps int    `json:"Steps"`
+	Points int    `json:"Points"`
 }
 
 type outputGroup struct {
 	Name    string      `json:"name"`
-	Steps   int         `json:"Steps"`
+	Points   int         `json:"Points"`
 	Members leaderboard `json:"members"`
 }
 
@@ -65,7 +65,7 @@ type request struct {
 	Source  source  `json:"source"`
 	Name    string  `json:"name"`
 	Group   string  `json:"group"`
-	Steps   int     `json:"steps"`
+	Points   int     `json:"points"`
 	Error   error   `json:"error"`
 	Hash    string  `json:"hash"`
 	Result  leaderboard

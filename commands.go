@@ -4,43 +4,41 @@ package main
 
 const (
 	NOP command = iota
-	ADDWALKER
-	REGISTERSTEPS
-	GETWALKER
+	ADDUSER
+	REGISTERPOINTS
+	GETUSER
 	ADDGROUP
-	ADDWALKERTOGROUP
-	DELETEWALKER
-	RESETSTEPS
+	ADDUSERTOGROUP
+	DELETEUSER
+	RESETPOINTS
 	GETGROUP
-	LISTWALKERS
-	LISTALLWALKERS
+	LISTUSERSFORSHARD
+	LISTUSERS
 	LISTGROUPS
 	LISTALLGROUPS
 	LISTGROUPSFORASHARD
-	LISTGROUPSFORASHARDSEQ
 )
 
 func (c command) String() string {
 	return [...]string{
 		"NOP",
-		"ADDWALKER",
-		"REGISTERSTEPS",
-		"GETWALKER",
+		"ADDUSER",
+		"REGISTERPOINTS",
+		"GETUSER",
 		"ADDGROUP",
-		"ADDWALKERTOGROUP",
-		"DELETEWALKER",
-		"RESETSTEPS",
+		"ADDUSERTOGROUP",
+		"DELETEUSER",
+		"RESETPOINTS",
 		"GETGROUP",
-		"LISTWALKERS",
-		"LISTALLWALKERS",
+		"LISTUSERSFORSHARD",
+		"LISTUSERS",
 		"LISTGROUPS",
 		"LISTALLGROUPS",
 		"LISTGROUPSFORASHARD",
-		"LISTGROUPSFORASHARDSEQ",
 	}[c]
 }
 
-func (a *App) steperHash(req *request)  {
+func (a *App) userHash(req *request)  {
 	cachhit,found := a.cache.Load(req.Name)
 	if !found {
 	req.Hash = calcHash(req.Name)
@@ -68,8 +66,8 @@ func (a *App) chardName(req *request) string {
 
 
 
-func (a *App) AddWalker(req *request) {
-	req.Cmd = ADDWALKER
+func (a *App) AddUser(req *request) {
+	req.Cmd = ADDUSER
 	if req.Name == EMPTYSTRING {
 		req.Error = &InvalidNameError{}
 		req.resp <- req
@@ -79,8 +77,8 @@ func (a *App) AddWalker(req *request) {
 	}
 }
 
-func (a *App) GetWalker(req *request) {
-	req.Cmd = GETWALKER
+func (a *App) GetUser(req *request) {
+	req.Cmd = GETUSER
 	if req.Name == EMPTYSTRING {
 		req.Error = &InvalidNameError{}
 		req.resp <- req
@@ -90,17 +88,17 @@ func (a *App) GetWalker(req *request) {
 	}
 }
 
-func (a *App) RegisterSteps(req *request) {
-	req.Cmd = REGISTERSTEPS
+func (a *App) RegisterPoints(req *request) {
+	req.Cmd = REGISTERPOINTS
 	if req.Name == EMPTYSTRING {
 		req.Error = &InvalidNameError{}
 		req.resp <- req
 		close(req.resp)
-	} else if req.Steps <= 0 {
+	} else if req.Points <= 0 {
 		req.Error = &NegativeStepCounterOrZeroError{}
 		req.resp <- req
 		close(req.resp)
-	} else if req.Steps >= a.config.MAXNUMBEROFSTEPSINPUT {
+	} else if req.Points >= a.config.MAXNUMBEROFSTEPSINPUT {
 		req.Error = &StepInputOverFlowError{}
 		req.resp <- req
 		close(req.resp)
@@ -121,7 +119,7 @@ func (a *App) AddGroup(req *request) {
 }
 
 func (a *App) AddWalkerToGroup(req *request) {
-	req.Cmd = ADDWALKERTOGROUP
+	req.Cmd = ADDUSERTOGROUP
 	if req.Name == EMPTYSTRING {
 		req.Error = &InvalidNameError{}
 		req.resp <- req
@@ -138,14 +136,14 @@ func (a *App) AddWalkerToGroup(req *request) {
 
 //not implemented yet
 func (a *App) DeleteWalker(req *request) {
-	req.Cmd = DELETEWALKER
+	req.Cmd = DELETEUSER
 	req.Error = &NotImplementedError{}
 	req.resp <- req
 	close(req.resp)
 }
 
 func (a *App) ResetSteps(req *request) {
-	req.Cmd = RESETSTEPS
+	req.Cmd = RESETPOINTS
 	if req.Name == EMPTYSTRING {
 		req.Error = &InvalidNameError{}
 		req.resp <- req
@@ -166,22 +164,17 @@ func (a *App) GetGroup(req *request) {
 	}
 }
 
-func (a *App) ListWalkers(req *request) {
-	req.Cmd = LISTWALKERS
+func (a *App) ListUsersForShard(req *request) {
+	req.Cmd = LISTUSERSFORSHARD
 	a.execLeadBoardCmd(req)
 }
 
-func (a *App) ListAll(req *request) {
-	req.Cmd = LISTALLWALKERS
+func (a *App) ListUsers(req *request) {
+	req.Cmd = LISTUSERS
 	req.Name = RandomString(10)
 	a.execLeadBoardCmd(req)
 }
 
-
-func (a *App) ListGroups(req *request) {
-	req.Cmd = LISTGROUPS
-	a.execGroupCmd(req)
-}
 
 
 func (a *App) ListGroupsForAShard(req *request) {
@@ -190,16 +183,9 @@ func (a *App) ListGroupsForAShard(req *request) {
 }
 
 
-func (a *App) ListGroupsForAShardSeq(req *request) {
-	req.Cmd = LISTGROUPSFORASHARDSEQ
-	a.execGroupCmd(req)
-}
 
-
-
-
-func (a *App) ListAllGroups(req *request) {
-	req.Cmd = LISTALLGROUPS
+func (a *App) ListGroups(req *request) {
+	req.Cmd = LISTGROUPS
 	req.Group = RandomString(10)
 	a.execGroupCmd(req)
 }
