@@ -60,7 +60,7 @@ func (p *pedometers) processGetGroup(req *request) {
 	}
 }
 
-func (p *pedometers) processListGroupForShards(req *request) {
+func (p *pedometers) processGroupForShards(req *request) {
 	req.Results = make(map[string]leaderboard)
 	for aGroupName, aGroup := range p.groups {
 		groupReplica := make(leaderboard)
@@ -90,14 +90,14 @@ func (p *pedometers) processListGroupForShards(req *request) {
 	close(req.resp)
 }
 
-func (p *pedometers) processListGroups(req *request) {
+func (p *pedometers) processGroups(req *request) {
 	req.Results = make(map[string]leaderboard)
 
 	for shard := 0; shard < p.config.SHARDS; shard++ {
 		if shard != p.index { // Obs Important to avoid deadlock....
 			newreq := newRequestInternal()
 			newreq.index = shard
-			APP.ListGroupsForAShard(newreq)
+			APP.GroupsForAShard(newreq)
 			responseFromOthersShards := <-newreq.resp
 			if responseFromOthersShards.Error != nil {
 				req.resp <- req

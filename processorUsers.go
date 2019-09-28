@@ -82,7 +82,7 @@ func (p *pedometers) processResetPoints(req *request) {
 	close(req.resp)
 }
 
-func (p *pedometers) processListUsers(req *request) {
+func (p *pedometers) processUsers(req *request) {
 
 	req.Result = make(leaderboard)
 	var wg sync.WaitGroup
@@ -93,7 +93,7 @@ func (p *pedometers) processListUsers(req *request) {
 			go func(index int) {
 				newreq := newRequestInternal()
 				newreq.index = index
-				APP.ListUsers(newreq)
+				APP.UsersForShard(newreq)
 				responseFromOthers <- newreq.resp
 				wg.Done()
 			}(shard)
@@ -129,7 +129,7 @@ func (p *pedometers) processListUsers(req *request) {
 	close(req.resp)
 }
 
-func (p *pedometers) processListUsersForShard(req *request) {
+func (p *pedometers) processUsersForShard(req *request) {
 	req.Result = make(leaderboard)
 	req.Points = 0
 	for k, v := range p.leaderboard {

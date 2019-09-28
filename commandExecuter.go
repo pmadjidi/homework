@@ -82,16 +82,16 @@ func (p *pedometers) dispatchCommand(req *request) {
 		p.processRegisterPoints(req)
 	case RESETPOINTS:
 		p.processResetPoints(req)
-	case LISTUSERS:
-		p.processListUsers(req)
+	case USERS:
+		p.processUsers(req)
 	case ADDGROUP:
 		p.processAddGroup(req)
 	case GETGROUP:
 		p.processGetGroup(req)
-	case LISTGROUPS:
-		p.processListGroups(req)
-	case LISTGROUPSFORASHARD:
-		p.processListGroupForShards(req)
+	case GROUPS:
+		p.processGroups(req)
+	case GROUPSFORASHARD:
+		p.processGroupForShards(req)
 	default:
 		req.Error = &UnknownCmdError{}
 		req.resp <- req

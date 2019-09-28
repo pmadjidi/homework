@@ -5,36 +5,34 @@ package main
 const (
 	NOP command = iota
 	ADDUSER
-	REGISTERPOINTS
 	GETUSER
+	DELETEUSER
+	USERSFORSHARD
+	USERS
+	REGISTERPOINTS
+	RESETPOINTS
 	ADDGROUP
 	ADDUSERTOGROUP
-	DELETEUSER
-	RESETPOINTS
 	GETGROUP
-	LISTUSERSFORSHARD
-	LISTUSERS
-	LISTGROUPS
-	LISTALLGROUPS
-	LISTGROUPSFORASHARD
+	GROUPS
+	GROUPSFORASHARD
 )
 
 func (c command) String() string {
 	return [...]string{
 		"NOP",
 		"ADDUSER",
-		"REGISTERPOINTS",
 		"GETUSER",
+		"DELETEUSER",
+		"USERSFORSHARD",
+		"USERS",
+		"REGISTERPOINTS",
+		"RESETPOINTS",
 		"ADDGROUP",
 		"ADDUSERTOGROUP",
-		"DELETEUSER",
-		"RESETPOINTS",
 		"GETGROUP",
-		"LISTUSERSFORSHARD",
-		"LISTUSERS",
-		"LISTGROUPS",
-		"LISTALLGROUPS",
-		"LISTGROUPSFORASHARD",
+		"GROUPS",
+		"GROUPSFORASHARD",
 	}[c]
 }
 
@@ -118,7 +116,7 @@ func (a *App) AddGroup(req *request) {
 	}
 }
 
-func (a *App) AddWalkerToGroup(req *request) {
+func (a *App) AddUserToGroup(req *request) {
 	req.Cmd = ADDUSERTOGROUP
 	if req.Name == EMPTYSTRING {
 		req.Error = &InvalidNameError{}
@@ -135,7 +133,7 @@ func (a *App) AddWalkerToGroup(req *request) {
 }
 
 //not implemented yet
-func (a *App) DeleteWalker(req *request) {
+func (a *App) DeleteUser(req *request) {
 	req.Cmd = DELETEUSER
 	req.Error = &NotImplementedError{}
 	req.resp <- req
@@ -164,28 +162,28 @@ func (a *App) GetGroup(req *request) {
 	}
 }
 
-func (a *App) ListUsersForShard(req *request) {
-	req.Cmd = LISTUSERSFORSHARD
+func (a *App) UsersForShard(req *request) {
+	req.Cmd = USERSFORSHARD
 	a.execLeadBoardCmd(req)
 }
 
-func (a *App) ListUsers(req *request) {
-	req.Cmd = LISTUSERS
+func (a *App) GetUsers(req *request) {
+	req.Cmd = GETUSER
 	req.Name = RandomString(10)
 	a.execLeadBoardCmd(req)
 }
 
 
 
-func (a *App) ListGroupsForAShard(req *request) {
-	req.Cmd = LISTGROUPSFORASHARD
+func (a *App) GroupsForAShard(req *request) {
+	req.Cmd = GROUPSFORASHARD
 	a.execGroupCmd(req)
 }
 
 
 
-func (a *App) ListGroups(req *request) {
-	req.Cmd = LISTGROUPS
+func (a *App) Groups(req *request) {
+	req.Cmd = GROUPS
 	req.Group = RandomString(10)
 	a.execGroupCmd(req)
 }

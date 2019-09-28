@@ -22,7 +22,7 @@ func (a *App) configureRoutes() {
 
 	a.Router.HandleFunc("/add/group/{group}", a.newGroup).Methods("GET")
 	a.Router.HandleFunc("/extend/{group}/{user}", a.extendGroup).Methods("GET")
-	a.Router.HandleFunc("/get/group/{name}", a.getGroup).Methods("GET")
+	a.Router.HandleFunc("/get/group/{group}", a.getGroup).Methods("GET")
 	a.Router.HandleFunc("/get/groups", a.getGroups).Methods("GET")
 	a.Router.HandleFunc("/get/shard/{index}", a.listShardGroups).Methods("GET")
 	a.PathPrefix("/debug/pprof/").Handler(http.DefaultServeMux)
@@ -147,7 +147,7 @@ func (a *App) getUser(w http.ResponseWriter, req *http.Request) {
 func (a *App) getUsers(w http.ResponseWriter, req *http.Request) {
 
 	r := newRequest()
-	a.ListUsers(r)
+	a.GetUser(r)
 	resp := <-r.resp
 
 	if resp.Error != nil {
@@ -205,7 +205,7 @@ func (a *App) extendGroup(w http.ResponseWriter, req *http.Request) {
 	r.Group = params["group"]
 	r.Name = params["user"]
 
-	a.AddWalkerToGroup(r)
+	a.AddUserToGroup(r)
 	resp := <-r.resp
 
 	if resp.Error != nil {
@@ -239,7 +239,7 @@ func (a *App) extendGroup(w http.ResponseWriter, req *http.Request) {
 func (a *App) getGroup(w http.ResponseWriter, req *http.Request) {
 	params := mux.Vars(req)
 	r := newRequest()
-	r.Group = params["user"]
+	r.Group = params["group"]
 	a.GetGroup(r)
 	resp := <-r.resp
 
@@ -277,7 +277,7 @@ func (a *App) listShardGroups(w http.ResponseWriter, req *http.Request) {
 	} else {
 		r.index = index
 	}
-	a.ListGroupsForAShard(r)
+	a.GroupsForAShard(r)
 	resp := <-r.resp
 
 	if resp.Error != nil {
@@ -306,7 +306,7 @@ func (a *App) listShardGroups(w http.ResponseWriter, req *http.Request) {
 func (a *App) getGroups(w http.ResponseWriter, req *http.Request) {
 
 	r := newRequest()
-	a.ListGroups(r)
+	a.Groups(r)
 	resp := <-r.resp
 
 	if resp.Error != nil {
