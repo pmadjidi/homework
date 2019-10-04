@@ -24,9 +24,9 @@ type config struct {
 	MAXITERATIONLIMIT int // concurrent request to API server
 	// always good to put a bound on datastructures...
 	MAXNUMBEROFSTEPSINPUT     int
-	MAXNUMBERSOFWALKERS       int
+	MAXNUMBERSOFUSERS       int
 	MAXNUMBEROFGROUPS         int
-	MAXNUMBEROFWALKERSINGROUP int
+	MAXNUMBEROFUSERSINGROUP int
 	TIMEOUT int
 	SHARDS int
 	HASHBITSTOSHARD int

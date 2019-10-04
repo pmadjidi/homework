@@ -9,7 +9,7 @@ func (p *pedometers) processAddUser(req *request) {
 	_, found := p.leaderboard[req.Name]
 	if found {
 		req.Error = &NameExistsError{}
-	} else if len(p.leaderboard) >= p.config.MAXNUMBERSOFWALKERS {
+	} else if len(p.leaderboard) >= p.config.MAXNUMBERSOFUSERS {
 		req.Error = &MaxNumberOFWalkersReachedError{}
 	} else {
 		p.leaderboard[req.Name] = 0

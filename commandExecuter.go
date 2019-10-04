@@ -14,7 +14,7 @@ func (s source) String() string {
 	}[s]
 }
 
-func newPedometers(name int, config *config) *pedometers {
+func newLeadger(name int, config *config) *pedometers {
 	return &pedometers{
 		name,
 		make(leaderboard),
@@ -27,7 +27,7 @@ func newPedometers(name int, config *config) *pedometers {
 	}
 }
 
-func (p *pedometers) startPedometers(quit chan bool) {
+func (p *pedometers) startLeadger(quit chan bool) {
 	name := strconv.Itoa(p.index)
 	println("Starting processors",name)
 	go func() {

@@ -27,9 +27,9 @@ func readIntFromEnv(name string) (int) {
 	MAXITERATIONLIMIT := 1000
 
 	MAXNUMBEROFSTEPSINPUT := 1000
-	MAXNUMBERSOFWALKERS := 1000000
+	MAXNUMBERSOFUSERS := 1000000
 	MAXNUMBEROFGROUPS := 100000
-	MAXNUMBEROFWALKERSINGROUP := 2000
+	MAXNUMBEROFUSERSINGROUP := 2000
 	TIMEOUT := 2
 	HASHBITSTOSHARD := 1
 	PORT  := 8090
@@ -56,9 +56,9 @@ func readIntFromEnv(name string) (int) {
 		} else {
 			result = iEnv
 		}
-	case "MAXNUMBERSOFWALKERS":
+	case "MAXNUMBERSOFUSERS":
 		if err != nil {
-			result = MAXNUMBERSOFWALKERS
+			result = MAXNUMBERSOFUSERS
 		} else {
 			result = iEnv
 		}
@@ -68,9 +68,9 @@ func readIntFromEnv(name string) (int) {
 		} else {
 			result = iEnv
 		}
-	case "MAXNUMBEROFWALKERSINGROUP":
+	case "MAXNUMBEROFUSERSINGROUP":
 		if err != nil {
-			result = MAXNUMBEROFWALKERSINGROUP
+			result = MAXNUMBEROFUSERSINGROUP
 		} else {
 			result = iEnv
 		}
@@ -104,9 +104,9 @@ func readConfig() *config {
 		readIntFromEnv("MAXQUEUELENGTH"),
 		readIntFromEnv("MAXITERATIONLIMIT"),
 		readIntFromEnv("MAXNUMBEROFSTEPSINPUT"),
-		readIntFromEnv("MAXNUMBERSOFWALKERS"),
+		readIntFromEnv("MAXNUMBERSOFUSERS"),
 		readIntFromEnv("MAXNUMBEROFGROUPS"),
-		readIntFromEnv("MAXNUMBEROFWALKERSINGROUP"),
+		readIntFromEnv("MAXNUMBEROFUSERSINGROUP"),
 		readIntFromEnv("TIMEOUT"),
 		SHARDS,
 		NUMBEROFHASHBITS,

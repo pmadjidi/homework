@@ -24,8 +24,8 @@ func newApp(name string) *App {
 func (a *App) startShardHandler(quit chan bool) {
 
 	for i := 0; i < a.config.SHARDS ; i++ {
-		a.shards[i] = newPedometers(i, a.config)
-		a.shards[i].startPedometers(quit)
+		a.shards[i] = newLeadger(i, a.config)
+		a.shards[i].startLeadger(quit)
 	}
 	go func() {
 		a.begin <-true
